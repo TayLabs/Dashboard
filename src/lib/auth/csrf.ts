@@ -1,19 +1,48 @@
+import 'server-only';
 import { cookies } from 'next/headers';
+import { parseCookie } from '@/utils/cookies';
+import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 
-export async function initializeCSRFToken() {
-	const cookieStore = await cookies();
+export async function initializeCSRFToken(): Promise<string> {
+  const cookieStore = await cookies();
 
-	const csrfToken = cookieStore.get('csrf');
+  let csrfToken = cookieStore.get('csrf');
 
-	if (!csrfToken) {
-		const response = await fetch('http://localhost:7313/api/v1/auth/csrf', {
-			method: 'GET',
-		});
+  if (!csrfToken || !csrfToken.value) {
+    const response = await fetch('http://localhost:7313/api/v1/auth/csrf', {
+      method: 'GET',
+    });
 
-		const resBody = await response.json();
+    const resBody = await response.json();
 
-		if (response.ok && resBody.success) {
-			cookieStore.set();
-		}
-	}
+    if (response.ok && resBody.success) {
+      const cookieHeaders = response.headers.getSetCookie();
+
+      for (const cookieHeader of cookieHeaders) {
+        cookieStore.set(parseCookie(cookieHeader));
+      }
+
+      cookieStore.set('csrf', resBody.data.csrfToken, {
+        httpOnly: true,
+        path: '/',
+        sameSite: 'lax',
+      });
+
+      csrfToken = { value: resBody.data.csrfToken } as RequestCookie;
+    }
+  }
+
+  return csrfToken!.value;
+}
+
+export async function getCSRFToken() {
+  const cookieStore = await cookies();
+
+  let csrfToken = cookieStore.get('csrf');
+
+  if (!csrfToken) {
+    csrfToken = { value: await initializeCSRFToken() } as RequestCookie;
+  }
+
+  return csrfToken.value;
 }
