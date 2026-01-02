@@ -10,7 +10,7 @@ export function parseCookie(cookie: string): ResponseCookie {
   };
 
   for (const option of options) {
-    const [key, valueString] = option.split('=');
+    const [key, valueString] = option.trim().split('=');
 
     switch (key) {
       case 'Path':
