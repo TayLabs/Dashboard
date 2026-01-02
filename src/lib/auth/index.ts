@@ -87,7 +87,7 @@ async function refreshTokens() {
   const cookieHeaders = response.headers.getSetCookie();
   for (const cookieHeader of cookieHeaders) {
     const { name, value, ...options } = parseCookie(cookieHeader);
-
+    console.log({ name, value, ...options });
     cookieStore.set(name, value, options);
   }
 

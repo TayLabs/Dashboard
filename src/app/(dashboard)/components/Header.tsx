@@ -17,15 +17,13 @@ export default function Header() {
 					<span className='font-mono font-light'>Dashboard</span> */}
       </h1>
       <div>
-        {user !== null ? (
-          <span className="mr-4">
-            Hello, {`${user?.profile.firstName} ${user?.profile.lastName}`}
-          </span>
+        {user === undefined ? (
+          <span>loading...</span>
+        ) : user !== null ? (
+          <span className="mr-4">Hello, {user?.profile.displayName}</span>
         ) : (
           <Link href="/auth/login">
-            <Button variant="default" asChild>
-              Login
-            </Button>
+            <Button variant="default">Login</Button>
           </Link>
         )}
       </div>

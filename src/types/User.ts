@@ -17,6 +17,7 @@ export type Profile = {
   username: string;
   firstName: string;
   lastName: string;
+  displayName: string;
   avatarUrl: string | null;
   bio: string | null;
   updatedAt: Date;
