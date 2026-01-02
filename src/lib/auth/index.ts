@@ -128,7 +128,7 @@ export async function isAuthenticated(
 			payload = (await jwt.decode(accessToken)) as AccessTokenPayload;
 		}
 
-		console.log(payload);
+		console.log('Payload: ', payload);
 
 		if (payload.pending != null) {
 			throw new Error(`Access pending ${payload.pending}`);

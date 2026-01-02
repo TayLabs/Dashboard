@@ -1,3 +1,9 @@
+import LoginForm from './LoginForm';
+
 export default function Login() {
-	return <section>Login Form</section>;
+	return (
+		<section className='container max-w-sm'>
+			<LoginForm />
+		</section>
+	);
 }

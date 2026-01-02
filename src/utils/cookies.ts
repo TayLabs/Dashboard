@@ -1,56 +1,39 @@
-type Cookie = {
-	name: string;
-	value: string;
-	options?: {
-		path?: string;
-		domain?: string;
-		expires?: Date;
-		maxAge?: number;
-		secure?: boolean;
-		httpOnly?: boolean;
-		sameSite?: 'lax' | 'strict' | 'none';
-	};
-};
+import { type ResponseCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 
-export function parseCookie(cookie: string): Cookie {
+export function parseCookie(cookie: string): ResponseCookie {
 	const [val, ...options] = cookie.split(';');
 
 	const [name, value] = val.split('=');
-	const parsed: Cookie = {
+	const parsed: ResponseCookie = {
 		name,
 		value,
 	};
 
-	if (options.length > 0) {
-		parsed.options = {} as Cookie['options'];
-		for (const option of options) {
-			const [key, valueString] = option.split('=');
+	for (const option of options) {
+		const [key, valueString] = option.split('=');
 
-			switch (key) {
-				case 'path':
-					parsed.options!.path = valueString;
-					break;
-				case 'domain':
-					parsed.options!.domain = valueString;
-					break;
-				case 'expires':
-					parsed.options!.expires = new Date(valueString);
-					break;
-				case 'maxAge':
-					parsed.options!.maxAge = parseInt(valueString);
-					break;
-				case 'secure':
-					parsed.options!.secure = valueString === 'true';
-					break;
-				case 'httpOnly':
-					parsed.options!.httpOnly = valueString === 'true';
-					break;
-				case 'sameSite':
-					parsed.options!.sameSite = valueString as NonNullable<
-						Cookie['options']
-					>['sameSite'];
-					break;
-			}
+		switch (key) {
+			case 'path':
+				parsed.path = valueString;
+				break;
+			case 'domain':
+				parsed.domain = valueString;
+				break;
+			case 'expires':
+				parsed.expires = parseInt(valueString);
+				break;
+			case 'maxAge':
+				parsed.maxAge = parseInt(valueString);
+				break;
+			case 'secure':
+				parsed.secure = valueString === 'true';
+				break;
+			case 'httpOnly':
+				parsed.httpOnly = valueString === 'true';
+				break;
+			case 'sameSite':
+				parsed.sameSite = valueString as CookieSameSite;
+				break;
 		}
 	}
 
