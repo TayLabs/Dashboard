@@ -20,7 +20,6 @@ export function parseCookie(cookie: string): ResponseCookie {
         parsed.domain = valueString;
         break;
       case 'Expires':
-        console.log('Parsing Expires date: ', valueString);
         parsed.expires = new Date(valueString);
         break;
       case 'MaxAge':

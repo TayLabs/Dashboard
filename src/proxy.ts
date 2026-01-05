@@ -1,40 +1,31 @@
 import {
-	NextResponse,
-	type MiddlewareConfig,
-	type NextRequest,
+  type MiddlewareConfig,
+  type NextRequest,
+  NextResponse,
 } from 'next/server';
-import { isAuthenticated } from './lib/auth';
-import AuthenticationError, {
-	Pending2FAError,
-	PendingEmailVerificationError,
-	PendingPasswordResetError,
-} from './lib/auth/types/AuthenticationError';
+import { refreshSession } from './lib/auth';
+import AuthenticationError from './lib/auth/types/AuthenticationError';
 
 export async function proxy(request: NextRequest) {
-	try {
-		await isAuthenticated({ request });
-	} catch (error) {
-		if (error instanceof AuthenticationError) {
-			switch (error.code) {
-				case 'P2FA':
-					return NextResponse.redirect('http://localhost:7919/auth/2fa');
-				case 'PPRS':
-					return NextResponse.redirect(
-						'http://localhost:7919/auth/reset-password'
-					);
-				case 'PEMV':
-					return NextResponse.redirect(
-						'http://localhost:7919/auth/verify-email'
-					);
-				default:
-					return NextResponse.redirect('http://localhost:7919/auth/login');
-			}
-		}
-	}
+  try {
+    await refreshSession();
+  } catch (error) {
+    if (error instanceof AuthenticationError) {
+      switch (error.code) {
+        case 'NFND':
+        case 'UNKN':
+          if (request.nextUrl.pathname !== '/auth/login') {
+            return NextResponse.redirect('http://localhost:7919/auth/login');
+          }
+      }
+    }
+  }
 
-	return NextResponse.next();
+  return NextResponse.next();
 }
 
 export const config = {
-	matcher: ['/'],
+  matcher: [
+    '/((?!auth/login|auth/sign-up|auth/forgot-password|api|_next|.*\\..*).*)', // Everything except /api and static files
+  ],
 } satisfies MiddlewareConfig;

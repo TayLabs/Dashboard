@@ -1,8 +1,11 @@
 import Heading from './components/Heading';
 import DialogAddServiceForm from './components/DialogRegisterServiceForm';
 import { Button } from '@/components/ui/button';
+import { isAuthenticated } from '@/lib/auth';
 
 export default async function HomePage() {
+  await isAuthenticated();
+
   return (
     <div className="container max-w-4xl mx-auto p-6 flex flex-col gap-8">
       <Heading />

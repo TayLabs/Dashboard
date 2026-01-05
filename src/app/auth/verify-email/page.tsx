@@ -1,5 +1,12 @@
-import React from 'react';
+import { isAuthenticated } from '@/lib/auth';
+import EmailVerificationSendForm from './EmailVerificationSendForm';
 
-export default function EmailVerification() {
-	return <div>EmailVerification</div>;
+export default async function EmailVerification() {
+  await isAuthenticated({ allowPending: ['emailVerification'] });
+
+  return (
+    <section className="container max-w-sm">
+      <EmailVerificationSendForm />
+    </section>
+  );
 }
