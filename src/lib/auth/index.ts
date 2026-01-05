@@ -156,7 +156,7 @@ export async function getAccessToken() {
   const cookieStore = await cookies();
 
   let token = cookieStore.get('_access_t')?.value as string | undefined;
-  if (!token && !(await isExecutedFromServerComponent())) {
+  if (!(await isExecutedFromServerComponent())) {
     const response = await refreshSession();
     token = response?.accessToken;
   }
