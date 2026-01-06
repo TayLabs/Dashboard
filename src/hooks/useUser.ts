@@ -1,5 +1,3 @@
-'use client';
-
 import { userContext } from '@/contexts/UserContext';
 import { useContext } from 'react';
 

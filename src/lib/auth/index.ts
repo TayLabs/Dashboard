@@ -40,6 +40,8 @@ export type AccessTokenPayload = {
   pending: PendingActionType;
   scopes: string[];
   issuedAt: number;
+  iat: number;
+  exp: number;
 };
 
 function verifyToken(token: string) {
