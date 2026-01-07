@@ -1,6 +1,6 @@
 import { SideMenuProvider } from '@/contexts/SideMenuContext';
 import Header from './components/Header';
-import SideMenu from '@/app/(dashboard)/(home)/components/SideMenu';
+import SideMenu from '@/app/(dashboard)/components/SideMenu';
 
 export default function DashboardHomeLayout({
   children,

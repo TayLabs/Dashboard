@@ -23,7 +23,7 @@ import React, { useState } from 'react';
 import { toast } from 'sonner';
 import z from 'zod';
 import yaml from 'js-yaml';
-import PermissionsInput from '../../(home)/components/PermissionsInput';
+import PermissionsInput from '../../components/PermissionsInput';
 import { Service } from '@/actions/types/interface/Service.interface';
 
 const addServiceFormSchema = z.object({

@@ -4,21 +4,38 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useSideMenu } from '@/hooks/use-sidemenu';
 import { cn } from '@/utils';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 type MenuItem = {
   title: string;
   url: string;
 };
 
-const menuItems = [
-  { title: 'Home', url: '/' },
-  { title: 'Services', url: '/services' },
-  { title: 'Users', url: '/users' },
-] satisfies MenuItem[];
+const menu = {
+  '/users': [{ title: 'Users', url: '/users' }],
+  '/services': [
+    { title: 'Services', url: '/services' },
+    { title: 'Roles', url: '/services/roles' },
+    { title: 'Api Keys', url: '/services/keys' },
+  ],
+  '/': [
+    { title: 'Home', url: '/' },
+    { title: 'Services', url: '/services' },
+    { title: 'Users', url: '/users' },
+  ],
+} as Record<string, MenuItem[]>;
 
 const sideMenuWidthClassName = 'md:w-72';
 
 export default function SideMenu() {
+  const pathname = usePathname();
+  const menuItems =
+    menu[
+      Object.keys(menu)
+        .filter((key) => pathname.startsWith(key))
+        .reduce((acc, curr) => (acc.length > curr.length ? acc : curr), '') // Find the most specific matching menu item (longest one is most specific)
+    ];
+
   const { isOpen } = useSideMenu();
   const isMobile = useIsMobile();
 
