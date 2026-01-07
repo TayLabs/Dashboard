@@ -14,6 +14,8 @@ const headerHeightClassName = 'h-12 md:h-18';
 
 const subDirectories = {
   '/services': 'Services',
+  '/roles': 'Services',
+  '/keys': 'Services',
   '/users': 'Users',
 } as Record<string, string>;
 

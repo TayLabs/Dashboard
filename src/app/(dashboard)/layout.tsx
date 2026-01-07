@@ -13,7 +13,7 @@ export default function DashboardHomeLayout({
         <div className="grid grid-cols-[min-content_1fr] grid-rows-[auto_1fr] h-screen">
           <Header />
           <SideMenu />
-          <main>{children}</main>
+          <main className="flex justify-center py-8 px-4">{children}</main>
         </div>
       </SideMenuProvider>
     </>

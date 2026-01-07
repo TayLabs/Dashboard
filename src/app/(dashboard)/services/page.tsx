@@ -8,7 +8,6 @@ import {
   ItemGroup,
   ItemTitle,
 } from '@/components/ui/item';
-import { Edit2Icon } from 'lucide-react';
 import Link from 'next/link';
 import {
   Empty,
@@ -17,6 +16,7 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from '@/components/ui/empty';
+import { PlusIcon } from 'lucide-react';
 
 export default async function ServicesPage() {
   const response = await getAllServices();
@@ -36,28 +36,19 @@ export default async function ServicesPage() {
         <ItemGroup className="gap-4">
           {external.length > 0 ? (
             external.map((service) => (
-              <Item
-                key={`${service.authId}-${service.keysId}`}
-                variant="outline">
+              <Item key={service.name} variant="outline">
                 <ItemContent>
                   <ItemTitle>
-                    <Link
-                      href={`/services/${service.authId}_${service.keysId}`}>
-                      <Button variant="ghost" size="sm" className="gap-3">
-                        <h5 className="text-lg font-normal">{service.name}</h5>
-                        <Edit2Icon />
-                      </Button>
-                    </Link>
+                    <h5 className="text-lg font-normal">{service.name}</h5>
                   </ItemTitle>
+                  <ItemDescription>{`${service.permissions.length} permissions`}</ItemDescription>
                 </ItemContent>
                 <ItemActions>
-                  {service.keysId && (
-                    <Link href={`/services/${service.keysId}/keys`}>
-                      <Button variant="outline" size="sm">
-                        Select
-                      </Button>
-                    </Link>
-                  )}
+                  <Link href={`/services/${service.name}`}>
+                    <Button variant="outline" size="sm">
+                      Edit
+                    </Button>
+                  </Link>
                 </ItemActions>
               </Item>
             ))
@@ -70,11 +61,21 @@ export default async function ServicesPage() {
                 </EmptyDescription>
               </EmptyHeader>
               <EmptyContent>
-                <Link href="/services/add">
-                  <Button>Register a service</Button>
+                <Link href="/services/add-service">
+                  <Button>
+                    <PlusIcon />
+                    <span>Register a service</span>
+                  </Button>
                 </Link>
               </EmptyContent>
             </Empty>
+          )}
+          {external.length > 0 && (
+            <Link href="/services/add-service">
+              <Button variant="outline" className="w-full">
+                Register a new service
+              </Button>
+            </Link>
           )}
         </ItemGroup>
         {internal && (
@@ -84,27 +85,18 @@ export default async function ServicesPage() {
             </h3>
             <ItemGroup className="gap-4">
               {internal.map((service) => (
-                <Item
-                  key={`${service.authId}-${service.keysId}`}
-                  variant="outline">
+                <Item key={service.name} variant="outline">
                   <ItemContent>
                     <ItemTitle>
-                      <Link
-                        href={`/services/${service.authId}_${service.keysId}`}>
-                        <Button variant="ghost" size="sm" className="gap-3">
-                          <h5 className="text-lg font-normal">
-                            {service.name}
-                          </h5>
-                          <Edit2Icon />
-                        </Button>
-                      </Link>
+                      <h5 className="text-lg font-normal">{service.name}</h5>
                     </ItemTitle>
+                    <ItemDescription>{`${service.permissions.length} permissions`}</ItemDescription>
                   </ItemContent>
                   <ItemActions>
                     {service.keysId && (
-                      <Link href={`/services/${service.keysId}/keys`}>
+                      <Link href={`/services/${service.name}`}>
                         <Button variant="outline" size="sm">
-                          Select
+                          Edit
                         </Button>
                       </Link>
                     )}

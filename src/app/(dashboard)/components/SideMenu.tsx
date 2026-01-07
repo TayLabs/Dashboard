@@ -12,17 +12,27 @@ type MenuItem = {
 };
 
 const menu = {
-  '/users': [{ title: 'Users', url: '/users' }],
-  '/services': [
-    { title: 'Services', url: '/services' },
-    { title: 'Roles', url: '/services/roles' },
-    { title: 'Api Keys', url: '/services/keys' },
-  ],
   '/': [
     { title: 'Home', url: '/' },
     { title: 'Services', url: '/services' },
     { title: 'Users', url: '/users' },
   ],
+  '/services': [
+    { title: 'Services', url: '/services' },
+    { title: 'Roles', url: '/roles' },
+    { title: 'Api Keys', url: '/keys' },
+  ],
+  '/roles': [
+    { title: 'Services', url: '/services' },
+    { title: 'Roles', url: '/roles' },
+    { title: 'Api Keys', url: '/keys' },
+  ],
+  '/keys': [
+    { title: 'Services', url: '/services' },
+    { title: 'Roles', url: '/roles' },
+    { title: 'Api Keys', url: '/keys' },
+  ],
+  '/users': [{ title: 'Users', url: '/users' }],
 } as Record<string, MenuItem[]>;
 
 const sideMenuWidthClassName = 'md:w-72';

@@ -11,32 +11,74 @@ import {
 } from '@/components/ui/empty';
 import { FolderCodeIcon } from 'lucide-react';
 import Link from 'next/link';
+import { getAllServices } from '@/actions/services';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemGroup,
+  ItemTitle,
+} from '@/components/ui/item';
 
 export default async function HomePage() {
   await isAuthenticated();
+
+  const response = await getAllServices();
 
   return (
     <div className="container max-w-3xl mx-auto px-6 py-12 flex flex-col gap-8">
       <Heading />
       <section id="services">
         <h2 className="text-2xl font-semibold mb-4">Your linked services</h2>
-        <Empty className="bg-muted">
-          <EmptyHeader>
-            <EmptyMedia variant="icon" className="p-8 bg-background shadow-sm">
-              <FolderCodeIcon className="size-8" />
-            </EmptyMedia>
-            <EmptyTitle>No Projects Yet</EmptyTitle>
-            <EmptyDescription>
-              You haven&apos;t created any projects yet. Get started by creating
-              your first project.
-            </EmptyDescription>
-          </EmptyHeader>
-          <EmptyContent>
-            <Link href="/services/add">
-              <Button>Register a service</Button>
-            </Link>
-          </EmptyContent>
-        </Empty>
+        {!response.success ? (
+          <Alert variant="destructive">
+            <AlertTitle>Error fetching services, try refreshing</AlertTitle>
+            <AlertDescription>{response.error}</AlertDescription>
+          </Alert>
+        ) : response.services.filter((service) => service.isExternal).length >
+          0 ? (
+          <ItemGroup className="gap-4">
+            {response.services
+              .filter((service) => service.isExternal)
+              .map((service) => (
+                <Item key={service.name} variant="outline">
+                  <ItemContent>
+                    <ItemTitle>
+                      <h5 className="text-lg font-normal">{service.name}</h5>
+                    </ItemTitle>
+                    <ItemDescription>{`${service.permissions.length} permissions`}</ItemDescription>
+                  </ItemContent>
+                  <ItemActions>
+                    <Link href={`/services/${service.name}`}>
+                      <Button variant="outline">Edit</Button>
+                    </Link>
+                  </ItemActions>
+                </Item>
+              ))}
+          </ItemGroup>
+        ) : (
+          <Empty className="bg-muted">
+            <EmptyHeader>
+              <EmptyMedia
+                variant="icon"
+                className="p-8 bg-background shadow-sm">
+                <FolderCodeIcon className="size-8" />
+              </EmptyMedia>
+              <EmptyTitle>No Projects Yet</EmptyTitle>
+              <EmptyDescription>
+                You haven&apos;t created any projects yet. Get started by
+                creating your first project.
+              </EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Link href="/services/add-service">
+                <Button>Register a service</Button>
+              </Link>
+            </EmptyContent>
+          </Empty>
+        )}
       </section>
     </div>
   );
