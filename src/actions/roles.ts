@@ -52,7 +52,7 @@ export async function getRole(
 }
 
 export async function addRole(
-  data: Omit<Role, 'id' | 'permissions'> & { permissions: UUID[] }
+  data: Omit<Role, 'id' | 'permissions'> & { permissions: string[] }
 ): Promise<FormActionResponse<{ role: Role }>> {
   try {
     const cookieStore = await cookies();
@@ -87,7 +87,7 @@ export async function addRole(
 
 export async function updateRole(
   id: UUID,
-  data: Omit<Role, 'id' | 'permissions'> & { permissions: UUID[] }
+  data: Omit<Role, 'id' | 'permissions'> & { permissions: string[] }
 ): Promise<FormActionResponse<{ role: Role }>> {
   try {
     const cookieStore = await cookies();

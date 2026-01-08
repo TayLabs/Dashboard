@@ -22,9 +22,9 @@ import { Service } from '@/actions/types/interface/Service.interface';
 
 const editRoleFormSchema = z.object({
   name: z.string().min(1, 'Role name is required'),
-  assignToNewUser: z.boolean('Must be a valid boolean').default(false),
+  assignToNewUser: z.boolean().transform(Boolean),
   permissions: z.array(
-    z.uuid('Must be a valid UUID').transform((str: string) => str as UUID)
+    z.uuid('Must be a valid UUID').transform((str) => str as UUID)
   ),
 });
 
@@ -42,12 +42,13 @@ export default function EditRoleForm({
     defaultValues: {
       name: role?.name || '',
       assignToNewUser: role?.assignToNewUser || false,
-      permissions: role?.permissions.map((permission) => permission.id) || [],
+      permissions:
+        role?.permissions.map((permission) => permission.id as string) ||
+        ([] as string[]), // zod array won't type as UUID[] properly and throws validation issues
     },
     validators: {
       onSubmit: editRoleFormSchema,
       onSubmitAsync: async ({ value: data }) => {
-        console.log(data);
         const response = !role
           ? await addRole(data)
           : await updateRole(role.id, data);
@@ -153,7 +154,7 @@ export default function EditRoleForm({
               <PermissionsInput
                 getAllServicesPromise={getAllServicesPromise}
                 scope="user"
-                value={field.state.value}
+                value={field.state.value as UUID[]}
                 onChange={(id, action) =>
                   field.setValue((values) => {
                     if (action === 'delete') {
