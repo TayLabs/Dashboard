@@ -62,24 +62,12 @@ export default async function EditKeyPage({ params }: EditKeyPageProps) {
             ? `Edit ${response.key.name} key`
             : 'Edit key'}
         </h1>
+        <p className="text-muted-foreground mb-4">
+          Modify a key within your environment. Use them to validate that a
+          request came from the proper service and that service has the right
+          permissions to use the resource.
+        </p>
       </div>
-      <p className="text-muted-foreground mb-4">
-        Modify a key within your environment to add permissions or change the
-        name of it. Internal keys are automatically populated via seed data and
-        cannot be modified.
-      </p>
-      {response?.success && !response?.key.isExternal && (
-        <Alert className="mb-4">
-          <AlertTitle className="inline-flex gap-2 items-center">
-            <InfoIcon className="size-5" />
-            <span>This key is internal and cannot be edited</span>
-          </AlertTitle>
-          <AlertDescription>
-            Internal keys are automatially seeded to the database upon startup
-            and will be overwritten if any changes are made here.
-          </AlertDescription>
-        </Alert>
-      )}
       {response && !response.success ? (
         <Alert variant="destructive">
           <AlertCircleIcon />
@@ -89,7 +77,7 @@ export default async function EditKeyPage({ params }: EditKeyPageProps) {
       ) : (
         <EditKeyForm
           getAllServicesPromise={getAllServicesPromise}
-          key={response?.success ? response.key : undefined}
+          keyData={response?.success ? response.key : undefined}
         />
       )}
     </section>

@@ -57,7 +57,9 @@ export default function PermissionsInput({
                   )
                   .map((permission) => (
                     <div
-                      key={permission.authId}
+                      key={
+                        scope === 'user' ? permission.authId : permission.keysId
+                      }
                       className="flex items-start gap-3">
                       <Checkbox
                         id={`${
@@ -70,7 +72,11 @@ export default function PermissionsInput({
                             ? permission.authId!
                             : permission.keysId!
                         }-${permission.key}`}
-                        checked={value.includes(permission.authId!)}
+                        checked={value.includes(
+                          scope === 'user'
+                            ? permission.authId!
+                            : permission.keysId!
+                        )}
                         onCheckedChange={(checked) => {
                           onChange(
                             scope === 'user'

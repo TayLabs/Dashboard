@@ -22,6 +22,7 @@ import {
   ItemGroup,
   ItemTitle,
 } from '@/components/ui/item';
+import Format from '@/utils/Format';
 import { PlusIcon } from 'lucide-react';
 import Link from 'next/link';
 
@@ -58,7 +59,18 @@ export default async function KeysPage() {
                   <ItemTitle>
                     <h5 className="text-lg font-normal">{key.name}</h5>
                   </ItemTitle>
-                  <ItemDescription>{`${key.permissions.length} permissions`}</ItemDescription>
+                  <ItemDescription>
+                    <span className="block">
+                      {/* <span>Key:&nbsp;</span> */}
+                      <span className="font-mono">{`****${key.keyLastFour}`}</span>
+                      <span>{` - ${
+                        key.permissions?.length || 0
+                      } permissions`}</span>
+                    </span>
+                    <span className="block">
+                      {`Expires on: ${Format.date(key.expiresAt).dateTime}`}
+                    </span>
+                  </ItemDescription>
                 </ItemContent>
                 <ItemActions>
                   <Link href={`/keys/${key.id}`}>

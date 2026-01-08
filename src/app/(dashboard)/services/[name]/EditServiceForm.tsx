@@ -38,6 +38,7 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { PlusIcon, Trash2Icon } from 'lucide-react';
+import type { UUID } from 'node:crypto';
 
 const editServiceFormSchema = z.object({
   service: z.string().min(1, 'Service name is required'),
@@ -59,6 +60,7 @@ export default function EditServiceForm({
   const router = useRouter();
   const [fileErrors, setFileErrors] = useState<{ message?: string }[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  const [id, setId] = useState<null | string>(null);
   const form = useForm({
     defaultValues: {
       service: service?.name || searchParams.get('name') || '',
@@ -84,9 +86,15 @@ export default function EditServiceForm({
             permissions: response.errors?.permissions,
           };
         }
+
+        setId(data.service);
       },
     },
-    onSubmit: () => {
+    onSubmit: ({ value }) => {
+      if (!service) {
+        router.push(`/services/${value.service}`);
+      }
+
       toast.success('Changes have been saved');
     },
   });

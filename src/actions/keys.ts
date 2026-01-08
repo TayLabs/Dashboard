@@ -12,15 +12,15 @@ export async function getAllKeys(): Promise<
 > {
   try {
     const { accessToken } = await getAccessToken();
-    const responseAuth = await fetch(`http://localhost:2313/api/v1/keys`, {
+    const responseKeys = await fetch(`http://localhost:2313/api/v1/keys`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     }).then((res) => res.json());
-    if (!responseAuth.success) throw new Error(responseAuth.message);
+    if (!responseKeys.success) throw new Error(responseKeys.message);
 
-    return { success: true, keys: responseAuth.data.keys };
+    return { success: true, keys: responseKeys.data.keys };
   } catch (error) {
     return { success: false, error: (error as Error).message };
   }
@@ -31,7 +31,7 @@ export async function getKey(
 ): Promise<{ success: true; key: Key } | { success: false; error: string }> {
   try {
     const { accessToken } = await getAccessToken();
-    const responseAuth = await fetch(
+    const responseKeys = await fetch(
       `http://localhost:2313/api/v1/keys/${id}`,
       {
         method: 'GET',
@@ -40,19 +40,19 @@ export async function getKey(
         },
       }
     ).then((res) => res.json());
-    if (!responseAuth.success) throw new Error(responseAuth.message);
+    if (!responseKeys.success) throw new Error(responseKeys.message);
 
-    return { success: true, key: responseAuth.data.key };
+    return { success: true, key: responseKeys.data.key };
   } catch (error) {
     return { success: false, error: (error as Error).message };
   }
 }
 
 export async function addKey(
-  data: Omit<Key, 'id' | 'permissions' | 'isExternal'> & {
+  data: Pick<Key, 'name'> & {
     permissions: string[];
   }
-): Promise<FormActionResponse<{ key: Key }>> {
+): Promise<FormActionResponse<{ key: Key; apiKey: string }>> {
   try {
     const cookieStore = await cookies();
 
@@ -63,7 +63,7 @@ export async function addKey(
       .map(({ name, value }) => `${name}=${value}`)
       .join('; ');
     const { accessToken } = await getAccessToken();
-    const responseAuth = await fetch(`http://localhost:2313/api/v1/keys`, {
+    const responseKeys = await fetch(`http://localhost:2313/api/v1/keys`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -73,9 +73,14 @@ export async function addKey(
       },
       body: JSON.stringify(data),
     }).then((res) => res.json());
-    if (!responseAuth.success) throw new Error(responseAuth.message);
 
-    return { success: true, key: responseAuth.data.key };
+    if (!responseKeys.success) throw new Error(responseKeys.message);
+
+    return {
+      success: true,
+      key: responseKeys.data.key,
+      apiKey: responseKeys.data.apiKey,
+    };
   } catch (error) {
     return { success: false, error: (error as Error).message };
   }
@@ -83,10 +88,10 @@ export async function addKey(
 
 export async function updateKey(
   id: UUID,
-  data: Omit<Key, 'id' | 'permissions' | 'isExternal'> & {
+  data: Pick<Key, 'name'> & {
     permissions: string[];
   }
-): Promise<FormActionResponse<{ key: Key }>> {
+): Promise<FormActionResponse<{ key: Key; apiKey: null }>> {
   try {
     const cookieStore = await cookies();
 
@@ -97,7 +102,7 @@ export async function updateKey(
       .map(({ name, value }) => `${name}=${value}`)
       .join('; ');
     const { accessToken } = await getAccessToken();
-    const responseAuth = await fetch(
+    const responseKeys = await fetch(
       `http://localhost:2313/api/v1/keys/${id}`,
       {
         method: 'PATCH',
@@ -110,9 +115,9 @@ export async function updateKey(
         body: JSON.stringify(data),
       }
     ).then((res) => res.json());
-    if (!responseAuth.success) throw new Error(responseAuth.message);
+    if (!responseKeys.success) throw new Error(responseKeys.message);
 
-    return { success: true, key: responseAuth.data.key };
+    return { success: true, key: responseKeys.data.key, apiKey: null };
   } catch (error) {
     return { success: false, error: (error as Error).message };
   }
@@ -131,7 +136,7 @@ export async function removeKey(
       .map(({ name, value }) => `${name}=${value}`)
       .join('; ');
     const { accessToken } = await getAccessToken();
-    const responseAuth = await fetch(
+    const responseKeys = await fetch(
       `http://localhost:2313/api/v1/keys/${id}`,
       {
         method: 'DELETE',
@@ -142,9 +147,9 @@ export async function removeKey(
         },
       }
     ).then((res) => res.json());
-    if (!responseAuth.success) throw new Error(responseAuth.message);
+    if (!responseKeys.success) throw new Error(responseKeys.message);
 
-    return { success: true, key: responseAuth.data.key };
+    return { success: true, key: responseKeys.data.key };
   } catch (error) {
     return { success: false, error: (error as Error).message };
   }

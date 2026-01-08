@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { useForm } from '@tanstack/react-form';
-import React from 'react';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
 import z from 'zod';
 import { useRouter } from 'next/navigation';
@@ -37,6 +37,7 @@ export default function EditRoleForm({
   >;
   role?: Role;
 }>) {
+  const [id, setId] = useState<null | UUID>(null);
   const router = useRouter();
   const form = useForm({
     defaultValues: {
@@ -62,9 +63,15 @@ export default function EditRoleForm({
             permissions: response.errors?.permissions,
           };
         }
+
+        setId(response.role.id);
       },
     },
     onSubmit: () => {
+      if (!role) {
+        router.push(`/roles/${id}`);
+      }
+
       toast.success('Changes have been saved');
     },
   });

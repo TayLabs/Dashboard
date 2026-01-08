@@ -77,6 +77,12 @@ export async function getAllServices(): Promise<
 
             if (j > -1) {
               results[i].permissions[j].keysId = permission.id;
+            } else {
+              results[i].permissions.push({
+                keysId: permission.id,
+                key: permission.key,
+                description: permission.description,
+              });
             }
           });
           results[i].keysId = service.id;
