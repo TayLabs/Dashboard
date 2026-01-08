@@ -17,6 +17,14 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { PlusIcon } from 'lucide-react';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 
 export default async function ServicesPage() {
   const response = await getAllServices();
@@ -29,8 +37,21 @@ export default async function ServicesPage() {
   const external = response.services.filter((service) => service.isExternal);
 
   return (
-    <div className="container max-w-3xl mx-auto px-6 py-12 flex flex-col gap-8">
-      <h1 className="text-3xl font-medium">Select a service</h1>
+    <div className="container max-w-2xl flex flex-col gap-8">
+      <div className="grid gap-2">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Services</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <h1 className="text-3xl font-medium">Select a service</h1>
+      </div>
       <section>
         <h3 className="text-xl font-medium my-4">External Services</h3>
         <ItemGroup className="gap-4">

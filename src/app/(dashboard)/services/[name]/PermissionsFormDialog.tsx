@@ -4,6 +4,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -12,7 +13,7 @@ import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import z from 'zod';
 import { useForm } from '@tanstack/react-form';
 import { Button } from '@/components/ui/button';
@@ -50,6 +51,7 @@ export default function PermissionsFormDialog({
 }>) {
   const value = selectedIndex >= 0 ? values[selectedIndex] : null;
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
   const form = useForm({
     defaultValues: {
       key: value?.key || '',
@@ -66,6 +68,17 @@ export default function PermissionsFormDialog({
     },
   });
 
+  // When value changes, reset the form's values
+  useEffect(() => {
+    form.reset(
+      value || {
+        key: '',
+        description: '',
+        scopes: [],
+      }
+    );
+  }, [value]);
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       {children}
@@ -75,10 +88,15 @@ export default function PermissionsFormDialog({
           e.preventDefault();
           form.handleSubmit();
         }}>
-        <DialogContent>
+        {/* Preven the dialog from scrolling to the bottom of the page when it closes due to backdrop click or cancel button */}
+        <DialogContent onCloseAutoFocus={(e) => e.preventDefault()}>
           <DialogTitle>
             {!value ? 'Add a permission' : `Edit ${value.key} permission`}
           </DialogTitle>
+          <DialogDescription>
+            Modify the permission linked to this service for it to be available
+            adding to roles or api keys.
+          </DialogDescription>
           <form.Field
             name="key"
             // eslint-disable-next-line react/no-children-prop
@@ -203,9 +221,20 @@ export default function PermissionsFormDialog({
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit" form="edit-permission-form">
-              Save
-            </Button>
+            <form.Subscribe
+              selector={(formState) => [
+                formState.canSubmit,
+                formState.isSubmitting,
+              ]}>
+              {([canSubmit, isSubmitting]) => (
+                <Button
+                  type="submit"
+                  form="edit-permission-form"
+                  disabled={!canSubmit}>
+                  {isSubmitting ? 'Saving...' : 'Save'}
+                </Button>
+              )}
+            </form.Subscribe>
           </DialogFooter>
         </DialogContent>
       </form>

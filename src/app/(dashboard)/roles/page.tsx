@@ -1,4 +1,12 @@
 import { getAllRoles } from '@/actions/roles';
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import {
   Empty,
@@ -25,8 +33,21 @@ export default async function RolesPage() {
   }
 
   return (
-    <div className="container max-w-3xl mx-auto px-6 py-12 flex flex-col gap-8">
-      <h1 className="text-3xl font-medium">Select a role</h1>
+    <div className="container max-w-2xl flex flex-col gap-8">
+      <div className="grid gap-2">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Roles</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <h1 className="text-3xl font-medium">Select a role</h1>
+      </div>
       <section>
         <h3 className="text-xl font-medium my-4">Roles</h3>
         {response.roles.length > 0 ? (
@@ -48,6 +69,12 @@ export default async function RolesPage() {
                 </ItemActions>
               </Item>
             ))}
+            <Link href="/roles/add-role">
+              <Button variant="outline" className="w-full">
+                <PlusIcon />
+                <span>Add a role</span>
+              </Button>
+            </Link>
           </ItemGroup>
         ) : (
           <Empty>

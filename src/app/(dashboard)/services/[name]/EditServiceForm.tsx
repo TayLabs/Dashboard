@@ -241,13 +241,13 @@ export default function EditServiceForm({
                         <ItemActions>
                           <DialogTrigger
                             asChild
-                            onClick={() =>
+                            onClick={() => {
                               setSelectedIndex(
                                 field.state.value.findIndex(
                                   (perm) => perm.key === permission.key
                                 )
-                              )
-                            }>
+                              );
+                            }}>
                             <Button variant="default">Edit</Button>
                           </DialogTrigger>
                           <Button
@@ -302,9 +302,21 @@ export default function EditServiceForm({
         }}
       />
       {(service && !service?.isExternal) || (
-        <Button type="submit" form="edit-service-form" className="mt-4 w-full">
-          Save
-        </Button>
+        <form.Subscribe
+          selector={(formState) => [
+            formState.canSubmit,
+            formState.isSubmitting,
+          ]}>
+          {([canSubmit, isSubmitting]) => (
+            <Button
+              type="submit"
+              form="edit-service-form"
+              className="mt-4 w-full"
+              disabled={!canSubmit}>
+              {isSubmitting ? 'Saving...' : 'Save'}
+            </Button>
+          )}
+        </form.Subscribe>
       )}
       {service && service?.isExternal && (
         <Button

@@ -5,6 +5,14 @@ import { AlertCircleIcon } from 'lucide-react';
 import { UUID } from 'node:crypto';
 import EditRoleForm from './EditRoleForm';
 import { getAllServices } from '@/actions/services';
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from '@/components/ui/breadcrumb';
 
 type EditRolePageProps = {
   params: Promise<{ id: UUID | 'add-role' }>;
@@ -25,9 +33,36 @@ export default async function EditRolePage({ params }: EditRolePageProps) {
 
   return (
     <section className="container max-w-2xl">
-      <h1 className="text-3xl font-semibold mb-4">
-        {!response && id === 'add-role' ? 'Add a role' : `Edit role`}
-      </h1>
+      <div className="grid gap-2">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/services">Services</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>
+                {!response && id === 'add-role'
+                  ? 'Add role'
+                  : response?.success
+                  ? `Edit ${response.role.name} role`
+                  : 'Edit role'}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <h1 className="text-3xl font-semibold mb-4">
+          {!response && id === 'add-role'
+            ? 'Add a role'
+            : response?.success
+            ? `Edit ${response.role.name} role`
+            : 'Edit role'}
+        </h1>
+      </div>
       <p className="text-muted-foreground mb-10">
         Modify a role within your environment to add permissions or change the
         name of it. Internal roles are automatically populated via a&nbsp;

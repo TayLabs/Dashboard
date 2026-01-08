@@ -4,6 +4,14 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircleIcon } from 'lucide-react';
 import Link from 'next/link';
 import EditServiceForm from './EditServiceForm';
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from '@/components/ui/breadcrumb';
 
 type EditServicePageProps = {
   params: Promise<{ name: 'add-service' | string }>;
@@ -23,11 +31,32 @@ export default async function EditServicePage({
 
   return (
     <section className="container max-w-2xl">
-      <h1 className="text-3xl font-semibold mb-4">
-        {!serviceResponse && name === 'add-service'
-          ? 'Add a service'
-          : `${name} service`}
-      </h1>
+      <div className="grid gap-2">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/services">Services</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>
+                {!serviceResponse && name === 'add-service'
+                  ? 'Add service'
+                  : `Edit ${name} service`}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <h1 className="text-3xl font-semibold mb-4">
+          {!serviceResponse && name === 'add-service'
+            ? 'Add a service'
+            : `Edit ${name} service`}
+        </h1>
+      </div>
       <p className="text-muted-foreground mb-10">
         Modify a service within your environment to add permissions or change
         the name of it. Internal services are automatically populated via

@@ -173,9 +173,18 @@ export default function EditRoleForm({
           )}
         />
       </FieldGroup>
-      <Button type="submit" form="edit-role-form" className="mt-4 w-full">
-        Save
-      </Button>
+      <form.Subscribe
+        selector={(formState) => [formState.canSubmit, formState.isSubmitting]}>
+        {([canSubmit, isSubmitting]) => (
+          <Button
+            type="submit"
+            form="edit-role-form"
+            className="mt-4 w-full"
+            disabled={!canSubmit}>
+            {isSubmitting ? 'Saving...' : 'Save'}
+          </Button>
+        )}
+      </form.Subscribe>
       {role && (
         <Button
           variant="destructive"
