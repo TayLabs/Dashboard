@@ -13,10 +13,10 @@ import { usePathname } from 'next/navigation';
 const headerHeightClassName = 'h-12 md:h-18';
 
 const subDirectories = {
-  '/services': 'Services',
-  '/roles': 'Services',
-  '/keys': 'Services',
-  '/users': 'Users',
+  '/services': 'Auth+Keys',
+  '/roles': 'Auth',
+  '/keys': 'Keys',
+  '/users': 'Auth',
 } as Record<string, string>;
 
 export default function Header() {
@@ -37,7 +37,7 @@ export default function Header() {
     <div className={cn('col-span-2', headerHeightClassName)}>
       <header
         className={cn(
-          'w-full px-4 md:px-8 flex items-center justify-between fixed top-0 inset-x-0 bg-background/90 backdrop-blur-sm transition-shadow duration-300',
+          'w-full px-4 md:px-8 flex items-center justify-between fixed top-0 inset-x-0 bg-background/90 backdrop-blur-sm transition-shadow duration-300 z-10',
           headerHeightClassName,
           {
             'shadow-xs': scrollPos.y > 10,

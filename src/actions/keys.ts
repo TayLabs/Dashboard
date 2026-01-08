@@ -1,41 +1,38 @@
 'use server';
 
 import { getAccessToken } from '@/lib/auth';
-import type { Role } from './types/interface/Role';
+import type { Key } from './types/interface/Key';
 import { UUID } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { getCSRFToken } from '@/lib/auth/csrf';
 import { FormActionResponse } from './types/FormAction';
 
-export async function getAllRoles(): Promise<
-  { success: true; roles: Role[] } | { success: false; error: string }
+export async function getAllKeys(): Promise<
+  { success: true; keys: Key[] } | { success: false; error: string }
 > {
   try {
     const { accessToken } = await getAccessToken();
-    const responseAuth = await fetch(
-      'http://localhost:7313/api/v1/admin/roles',
-      {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    ).then((res) => res.json());
+    const responseAuth = await fetch(`http://localhost:2313/api/v1/keys`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }).then((res) => res.json());
     if (!responseAuth.success) throw new Error(responseAuth.message);
 
-    return { success: true, roles: responseAuth.data.roles };
+    return { success: true, keys: responseAuth.data.keys };
   } catch (error) {
     return { success: false, error: (error as Error).message };
   }
 }
 
-export async function getRole(
+export async function getKey(
   id: UUID
-): Promise<{ success: true; role: Role } | { success: false; error: string }> {
+): Promise<{ success: true; key: Key } | { success: false; error: string }> {
   try {
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      `http://localhost:7313/api/v1/admin/roles/${id}`,
+      `http://localhost:2313/api/v1/keys/${id}`,
       {
         method: 'GET',
         headers: {
@@ -45,17 +42,17 @@ export async function getRole(
     ).then((res) => res.json());
     if (!responseAuth.success) throw new Error(responseAuth.message);
 
-    return { success: true, role: responseAuth.data.role };
+    return { success: true, key: responseAuth.data.key };
   } catch (error) {
     return { success: false, error: (error as Error).message };
   }
 }
 
-export async function addRole(
-  data: Omit<Role, 'id' | 'permissions' | 'isExternal'> & {
+export async function addKey(
+  data: Omit<Key, 'id' | 'permissions' | 'isExternal'> & {
     permissions: string[];
   }
-): Promise<FormActionResponse<{ role: Role }>> {
+): Promise<FormActionResponse<{ key: Key }>> {
   try {
     const cookieStore = await cookies();
 
@@ -66,33 +63,30 @@ export async function addRole(
       .map(({ name, value }) => `${name}=${value}`)
       .join('; ');
     const { accessToken } = await getAccessToken();
-    const responseAuth = await fetch(
-      `http://localhost:7313/api/v1/admin/roles`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          Cookie: cookieHeader,
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrf,
-        },
-        body: JSON.stringify(data),
-      }
-    ).then((res) => res.json());
+    const responseAuth = await fetch(`http://localhost:2313/api/v1/keys`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Cookie: cookieHeader,
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrf,
+      },
+      body: JSON.stringify(data),
+    }).then((res) => res.json());
     if (!responseAuth.success) throw new Error(responseAuth.message);
 
-    return { success: true, role: responseAuth.data.role };
+    return { success: true, key: responseAuth.data.key };
   } catch (error) {
     return { success: false, error: (error as Error).message };
   }
 }
 
-export async function updateRole(
+export async function updateKey(
   id: UUID,
-  data: Omit<Role, 'id' | 'permissions' | 'isExternal'> & {
+  data: Omit<Key, 'id' | 'permissions' | 'isExternal'> & {
     permissions: string[];
   }
-): Promise<FormActionResponse<{ role: Role }>> {
+): Promise<FormActionResponse<{ key: Key }>> {
   try {
     const cookieStore = await cookies();
 
@@ -104,7 +98,7 @@ export async function updateRole(
       .join('; ');
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      `http://localhost:7313/api/v1/admin/roles/${id}`,
+      `http://localhost:2313/api/v1/keys/${id}`,
       {
         method: 'PATCH',
         headers: {
@@ -118,15 +112,15 @@ export async function updateRole(
     ).then((res) => res.json());
     if (!responseAuth.success) throw new Error(responseAuth.message);
 
-    return { success: true, role: responseAuth.data.role };
+    return { success: true, key: responseAuth.data.key };
   } catch (error) {
     return { success: false, error: (error as Error).message };
   }
 }
 
-export async function removeRole(
+export async function removeKey(
   id: UUID
-): Promise<{ success: true; role: Role } | { success: false; error: string }> {
+): Promise<{ success: true; key: Key } | { success: false; error: string }> {
   try {
     const cookieStore = await cookies();
 
@@ -138,7 +132,7 @@ export async function removeRole(
       .join('; ');
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      `http://localhost:7313/api/v1/admin/roles/${id}`,
+      `http://localhost:2313/api/v1/keys/${id}`,
       {
         method: 'DELETE',
         headers: {
@@ -150,7 +144,7 @@ export async function removeRole(
     ).then((res) => res.json());
     if (!responseAuth.success) throw new Error(responseAuth.message);
 
-    return { success: true, role: responseAuth.data.role };
+    return { success: true, key: responseAuth.data.key };
   } catch (error) {
     return { success: false, error: (error as Error).message };
   }

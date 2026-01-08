@@ -24,7 +24,7 @@ export async function getAllServices(): Promise<
         },
       }
     ).then((res) => res.json());
-    if (!responseAuth.success) throw new Error('Auth: ' + responseAuth.message);
+    if (!responseAuth.success) throw new Error(responseAuth.message);
 
     const responseKeys = await fetch('http://localhost:2313/api/v1/services', {
       method: 'GET',
@@ -32,7 +32,7 @@ export async function getAllServices(): Promise<
         Authorization: `Bearer ${accessToken}`,
       },
     }).then((res) => res.json());
-    if (!responseKeys.success) throw new Error('Keys: ' + responseKeys.message);
+    if (!responseKeys.success) throw new Error(responseKeys.message);
     responseAuth.data.services.map(
       (service: {
         id: UUID;
@@ -106,7 +106,7 @@ export async function getService(
         },
       }
     ).then((res) => res.json());
-    if (!responseAuth.success) throw new Error('Auth: ' + responseAuth.message);
+    if (!responseAuth.success) throw new Error(responseAuth.message);
 
     const responseKeys = await fetch(
       `http://localhost:2313/api/v1/services/${name}`,
@@ -117,7 +117,7 @@ export async function getService(
         },
       }
     ).then((res) => res.json());
-    if (!responseKeys.success) throw new Error('Keys: ' + responseKeys.message);
+    if (!responseKeys.success) throw new Error(responseKeys.message);
 
     const result = {
       authId: responseAuth.data.service.id,

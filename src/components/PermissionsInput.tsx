@@ -13,6 +13,7 @@ export default function PermissionsInput({
   value,
   onChange,
   onBlur,
+  disabled,
 }: Readonly<{
   getAllServicesPromise: Promise<
     { success: true; services: Service[] } | { success: false; error: string }
@@ -21,6 +22,7 @@ export default function PermissionsInput({
   value: UUID[];
   onChange: (id: UUID, action: 'add' | 'delete') => void;
   onBlur: () => void;
+  disabled?: boolean;
 }>) {
   const response = use(getAllServicesPromise);
 
@@ -69,14 +71,16 @@ export default function PermissionsInput({
                             : permission.keysId!
                         }-${permission.key}`}
                         checked={value.includes(permission.authId!)}
-                        onCheckedChange={(checked) =>
+                        onCheckedChange={(checked) => {
                           onChange(
                             scope === 'user'
                               ? permission.authId!
                               : permission.keysId!,
                             checked ? 'add' : 'delete'
-                          )
-                        }
+                          );
+                          onBlur();
+                        }}
+                        disabled={disabled}
                       />
                       <div className="grid gap-2">
                         <Label

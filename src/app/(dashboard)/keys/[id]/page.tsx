@@ -1,9 +1,9 @@
-import { getRole } from '@/actions/roles';
-import { Role } from '@/actions/types/interface/Role';
+import { getKey } from '@/actions/keys';
+import { Key } from '@/actions/types/interface/Key';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircleIcon, InfoIcon } from 'lucide-react';
 import { UUID } from 'node:crypto';
-import EditRoleForm from './EditRoleForm';
+import EditKeyForm from './EditKeyForm';
 import { getAllServices } from '@/actions/services';
 import {
   Breadcrumb,
@@ -14,21 +14,21 @@ import {
   BreadcrumbPage,
 } from '@/components/ui/breadcrumb';
 
-type EditRolePageProps = {
-  params: Promise<{ id: UUID | 'add-role' }>;
+type EditKeyPageProps = {
+  params: Promise<{ id: UUID | 'add-key' }>;
 };
 
-export default async function EditRolePage({ params }: EditRolePageProps) {
+export default async function EditKeyPage({ params }: EditKeyPageProps) {
   const getAllServicesPromise = getAllServices(); // used to fetch all permissions
 
   const { id } = await params;
 
   let response:
-    | { success: true; role: Role }
+    | { success: true; key: Key }
     | { success: false; error: string }
     | null = null;
-  if (id !== 'add-role') {
-    response = await getRole(id);
+  if (id !== 'add-key') {
+    response = await getKey(id);
   }
 
   return (
@@ -41,41 +41,41 @@ export default async function EditRolePage({ params }: EditRolePageProps) {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/roles">Roles</BreadcrumbLink>
+              <BreadcrumbLink href="/keys">Keys</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbPage>
-                {!response && id === 'add-role'
-                  ? 'Add role'
+                {!response && id === 'add-key'
+                  ? 'Add key'
                   : response?.success
-                  ? `Edit ${response.role.name} role`
-                  : 'Edit role'}
+                  ? `Edit ${response.key.name} key`
+                  : 'Edit key'}
               </BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
         <h1 className="text-3xl font-semibold mb-4">
-          {!response && id === 'add-role'
-            ? 'Add a role'
+          {!response && id === 'add-key'
+            ? 'Add a key'
             : response?.success
-            ? `Edit ${response.role.name} role`
-            : 'Edit role'}
+            ? `Edit ${response.key.name} key`
+            : 'Edit key'}
         </h1>
       </div>
       <p className="text-muted-foreground mb-4">
-        Modify a role within your environment to add permissions or change the
-        name of it. Internal roles are automatically populated via seed data and
+        Modify a key within your environment to add permissions or change the
+        name of it. Internal keys are automatically populated via seed data and
         cannot be modified.
       </p>
-      {response?.success && !response?.role.isExternal && (
+      {response?.success && !response?.key.isExternal && (
         <Alert className="mb-4">
           <AlertTitle className="inline-flex gap-2 items-center">
             <InfoIcon className="size-5" />
-            <span>This role is internal and cannot be edited</span>
+            <span>This key is internal and cannot be edited</span>
           </AlertTitle>
           <AlertDescription>
-            Internal roles are automatially seeded to the database upon startup
+            Internal keys are automatially seeded to the database upon startup
             and will be overwritten if any changes are made here.
           </AlertDescription>
         </Alert>
@@ -83,13 +83,13 @@ export default async function EditRolePage({ params }: EditRolePageProps) {
       {response && !response.success ? (
         <Alert variant="destructive">
           <AlertCircleIcon />
-          <AlertTitle>Error loading the role with a id of {id}</AlertTitle>
+          <AlertTitle>Error loading the key with a id of {id}</AlertTitle>
           <AlertDescription>{response.error}</AlertDescription>
         </Alert>
       ) : (
-        <EditRoleForm
+        <EditKeyForm
           getAllServicesPromise={getAllServicesPromise}
-          role={response?.success ? response.role : undefined}
+          key={response?.success ? response.key : undefined}
         />
       )}
     </section>

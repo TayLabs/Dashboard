@@ -56,7 +56,17 @@ export default async function RolesPage() {
               <Item key={role.name} variant="outline">
                 <ItemContent>
                   <ItemTitle>
-                    <h5 className="text-lg font-normal">{role.name}</h5>
+                    <h5 className="text-lg font-normal">
+                      <span>{role.name}</span>
+                      {!role.isExternal && (
+                        <>
+                          &nbsp;
+                          <sup className="text-xs text-muted-foreground">
+                            internal
+                          </sup>
+                        </>
+                      )}
+                    </h5>
                   </ItemTitle>
                   <ItemDescription>{`${role.permissions.length} permissions`}</ItemDescription>
                 </ItemContent>

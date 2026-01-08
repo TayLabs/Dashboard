@@ -15,24 +15,10 @@ const menu = {
   '/': [
     { title: 'Home', url: '/' },
     { title: 'Services', url: '/services' },
+    { title: 'Keys', url: '/keys' },
+    { title: 'Roles', url: '/roles' },
     { title: 'Users', url: '/users' },
   ],
-  '/services': [
-    { title: 'Services', url: '/services' },
-    { title: 'Roles', url: '/roles' },
-    { title: 'Api Keys', url: '/keys' },
-  ],
-  '/roles': [
-    { title: 'Services', url: '/services' },
-    { title: 'Roles', url: '/roles' },
-    { title: 'Api Keys', url: '/keys' },
-  ],
-  '/keys': [
-    { title: 'Services', url: '/services' },
-    { title: 'Roles', url: '/roles' },
-    { title: 'Api Keys', url: '/keys' },
-  ],
-  '/users': [{ title: 'Users', url: '/users' }],
 } as Record<string, MenuItem[]>;
 
 const sideMenuWidthClassName = 'md:w-72';

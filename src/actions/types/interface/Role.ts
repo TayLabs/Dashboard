@@ -5,5 +5,6 @@ export type Role = {
   id: UUID;
   name: string;
   assignToNewUser: boolean;
+  isExternal: boolean;
   permissions: (Omit<Permission, 'authId' | 'keysId'> & { id: UUID })[];
 };

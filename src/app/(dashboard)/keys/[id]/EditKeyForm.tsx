@@ -1,5 +1,5 @@
 'use client';
-import { Role } from '@/actions/types/interface/Role';
+import { Key } from '@/actions/types/interface/Key';
 import { Button } from '@/components/ui/button';
 import {
   Field,
@@ -14,44 +14,44 @@ import React from 'react';
 import { toast } from 'sonner';
 import z from 'zod';
 import { useRouter } from 'next/navigation';
-import { addRole, removeRole, updateRole } from '@/actions/roles';
+import { addKey, removeKey, updateKey } from '@/actions/keys';
 import type { UUID } from 'node:crypto';
 import { Switch } from '@/components/ui/switch';
-import PermissionsInput from '@/components/PermissionsInput';
+import PermissionsInput from '../../../../components/PermissionsInput';
 import { Service } from '@/actions/types/interface/Service.interface';
 
-const editRoleFormSchema = z.object({
-  name: z.string().min(1, 'Role name is required'),
+const editKeyFormSchema = z.object({
+  name: z.string().min(1, 'Key name is required'),
   assignToNewUser: z.boolean().transform(Boolean),
   permissions: z.array(
     z.uuid('Must be a valid UUID').transform((str) => str as UUID)
   ),
 });
 
-export default function EditRoleForm({
+export default function EditKeyForm({
   getAllServicesPromise,
-  role,
+  key,
 }: Readonly<{
   getAllServicesPromise: Promise<
     { success: true; services: Service[] } | { success: false; error: string }
   >;
-  role?: Role;
+  key?: Key;
 }>) {
   const router = useRouter();
   const form = useForm({
     defaultValues: {
-      name: role?.name || '',
-      assignToNewUser: role?.assignToNewUser || false,
+      name: key?.name || '',
+      assignToNewUser: key?.assignToNewUser || false,
       permissions:
-        role?.permissions.map((permission) => permission.id as string) ||
+        key?.permissions.map((permission) => permission.id as string) ||
         ([] as string[]), // zod array won't type as UUID[] properly and throws validation issues
     },
     validators: {
-      onSubmit: editRoleFormSchema,
+      onSubmit: editKeyFormSchema,
       onSubmitAsync: async ({ value: data }) => {
-        const response = !role
-          ? await addRole(data)
-          : await updateRole(role.id, data);
+        const response = !key
+          ? await addKey(data)
+          : await updateKey(key.id, data);
 
         if (!response.success) {
           if (response.error) toast.error(response.error);
@@ -72,18 +72,18 @@ export default function EditRoleForm({
   const handleDelete = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    const response = await removeRole(role!.id);
+    const response = await removeKey(key!.id);
 
     if (!response.success) {
       toast.error(response.error);
     } else {
-      router.push('/roles');
+      router.push('/keys');
     }
   };
 
   return (
     <form
-      id="edit-role-form"
+      id="edit-key-form"
       onSubmit={(e) => {
         e.preventDefault();
         form.handleSubmit();
@@ -107,8 +107,8 @@ export default function EditRoleForm({
                   onChange={(e) => field.handleChange(e.target.value)}
                   required
                   aria-invalid={isInvalid}
-                  autoComplete="role-name"
-                  disabled={!role?.isExternal}
+                  autoComplete="key-name"
+                  disabled={!key?.isExternal}
                 />
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
@@ -136,7 +136,7 @@ export default function EditRoleForm({
                     field.handleChange(e.valueOf() as boolean)
                   }
                   aria-invalid={isInvalid}
-                  disabled={!role?.isExternal}
+                  disabled={!key?.isExternal}
                 />
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
@@ -170,13 +170,13 @@ export default function EditRoleForm({
                   })
                 }
                 onBlur={field.handleBlur}
-                disabled={!role?.isExternal}
+                disabled={!key?.isExternal}
               />
             </Field>
           )}
         />
       </FieldGroup>
-      {!role?.isExternal || (
+      {!key?.isExternal || (
         <>
           <form.Subscribe
             selector={(formState) => [
@@ -186,14 +186,14 @@ export default function EditRoleForm({
             {([canSubmit, isSubmitting]) => (
               <Button
                 type="submit"
-                form="edit-role-form"
+                form="edit-key-form"
                 className="mt-4 w-full"
                 disabled={!canSubmit}>
                 {isSubmitting ? 'Saving...' : 'Save'}
               </Button>
             )}
           </form.Subscribe>
-          {role && (
+          {key && (
             <Button
               variant="destructive"
               className="mt-4 w-full"

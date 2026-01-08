@@ -87,7 +87,7 @@ export default function EditServiceForm({
       },
     },
     onSubmit: () => {
-      router.push('/services');
+      toast.success('Changes have been saved');
     },
   });
 
