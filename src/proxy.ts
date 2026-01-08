@@ -7,8 +7,9 @@ import { refreshSession } from './lib/auth';
 import AuthenticationError from './lib/auth/types/AuthenticationError';
 
 export async function proxy(request: NextRequest) {
+  let accessToken: string | undefined = undefined;
   try {
-    await refreshSession();
+    accessToken = (await refreshSession(request)).accessToken;
   } catch (error) {
     if (error instanceof AuthenticationError) {
       switch (error.code) {
@@ -21,7 +22,17 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+
+  if (accessToken) {
+    response.cookies.set('_access_t', accessToken, {
+      httpOnly: true,
+      domain: 'localhost',
+      path: '/',
+    });
+  }
+
+  return response;
 }
 
 export const config = {

@@ -11,6 +11,7 @@ import AuthenticationError, {
 } from './types/AuthenticationError';
 import { redirect } from 'next/navigation';
 import { isExecutedFromServerComponent } from '@/utils';
+import { NextRequest } from 'next/server';
 
 type RefreshResponse =
   | {
@@ -65,6 +66,14 @@ const refreshing = new Map<
 export async function refreshSession(): Promise<{
   accessToken: string;
   pending: PendingActionType;
+}>;
+export async function refreshSession(request: NextRequest): Promise<{
+  accessToken: string;
+  pending: PendingActionType;
+}>;
+export async function refreshSession(request?: NextRequest): Promise<{
+  accessToken: string;
+  pending: PendingActionType;
 }> {
   // try {
   if (!(await isExecutedFromServerComponent())) {
@@ -77,7 +86,8 @@ export async function refreshSession(): Promise<{
   if (accessToken) {
     const payload = verifyToken(accessToken);
 
-    if (payload) {
+    // is token invalid/not verified or going to expire in 2 minutes, if yes, continue refreshing
+    if (payload && (payload.exp - 2 * 60) * 1000 < Date.now()) {
       return { accessToken, pending: payload.pending };
     }
   }
@@ -122,12 +132,14 @@ export async function refreshSession(): Promise<{
       domain: 'localhost',
       sameSite: 'lax',
     });
+    request?.cookies.set('_access_t', token);
 
     const cookieHeaders = response.headers.getSetCookie();
     for (const cookieHeader of cookieHeaders) {
       const { name, value, ...options } = parseCookie(cookieHeader);
 
       cookieStore.set(name, value, options);
+      request?.cookies.set(name, value);
     }
 
     return resBody.data;
