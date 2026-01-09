@@ -40,6 +40,44 @@ export async function getAllUsers(): Promise<
   }
 }
 
+export async function getUserWithRoles(
+  userId: UUID
+): Promise<
+  | { success: true; user: User & { roles: Role[] } }
+  | { success: false; error: string }
+> {
+  try {
+    const { accessToken } = await getAccessToken();
+    const response = await fetch(
+      `http://localhost:7313/api/v1/admin/users/${userId}/roles`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    ).then((res) => res.json());
+    if (!response.success) throw new Error(response.message);
+
+    return {
+      success: true,
+      user: response.data.user,
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    } else {
+      return {
+        success: false,
+        error: 'An unknown error occured, please try again',
+      };
+    }
+  }
+}
+
 export async function forcePasswordReset(
   userId: UUID
 ): Promise<{ success: true } | { success: false; error: string }> {

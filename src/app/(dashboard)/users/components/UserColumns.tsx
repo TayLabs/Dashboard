@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 import { ConfirmPasswordResetDialog } from './ConfirmPasswordResetDialog';
 import { UUID } from 'node:crypto';
 import { forcePasswordReset } from '@/actions/users';
-import EditUserRoleDialog from './EditUserRoleDialog';
+import { useRouter } from 'next/navigation';
 
 const handleReset = async (userId: UUID) => {
   const response = await forcePasswordReset(userId);
@@ -45,7 +45,7 @@ export const columns: ColumnDef<User>[] = [
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [isPassResetOpen, setIsPassResetOpen] = useState<boolean>(false);
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const [isEditRoleOpen, setIsEditRoleOpen] = useState<boolean>(false);
+      const router = useRouter();
 
       const user = row.original;
 
@@ -55,11 +55,6 @@ export const columns: ColumnDef<User>[] = [
             isOpen={isPassResetOpen}
             setIsOpen={setIsPassResetOpen}
             onResetConfirm={() => handleReset(user.id)}
-          />
-          <EditUserRoleDialog
-            user={user}
-            isOpen={isEditRoleOpen}
-            setIsOpen={setIsEditRoleOpen}
           />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -72,7 +67,7 @@ export const columns: ColumnDef<User>[] = [
               <DropdownMenuItem
                 onClick={(e) => {
                   e.preventDefault();
-                  setIsEditRoleOpen(true);
+                  router.push(`/users/${user.id}`);
                 }}>
                 <UsersIcon />
                 <span>Edit Role assignments</span>
