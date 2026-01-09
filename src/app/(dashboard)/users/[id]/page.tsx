@@ -31,7 +31,7 @@ export default async function UserPage({
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/services">Users</BreadcrumbLink>
+              <BreadcrumbLink href="/users">Users</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
