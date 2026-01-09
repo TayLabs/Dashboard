@@ -9,6 +9,7 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { AlertCircleIcon } from 'lucide-react';
+import UserTable from './components/UserTable';
 
 export default async function UsersPage() {
   const response = await getAllUsers();
@@ -41,7 +42,9 @@ export default async function UsersPage() {
         </Breadcrumb>
         <h1 className="text-3xl font-medium">Users</h1>
       </div>
-      <section></section>
+      <section>
+        <UserTable users={response.users} />
+      </section>
     </div>
   );
 }
