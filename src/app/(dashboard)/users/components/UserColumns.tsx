@@ -13,6 +13,16 @@ import { LockIcon, MoreHorizontalIcon, UsersIcon } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { ConfirmPasswordResetDialog } from './ConfirmPasswordResetDialog';
+import { UUID } from 'node:crypto';
+import { forcePasswordReset } from '@/actions/users';
+import EditUserRoleDialog from './EditUserRoleDialog';
+
+const handleReset = async (userId: UUID) => {
+  const response = await forcePasswordReset(userId);
+
+  if (!response.success) toast.error(response.error);
+  else toast.success('User will be prompted to reset their password');
+};
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -34,6 +44,8 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const [isPassResetOpen, setIsPassResetOpen] = useState<boolean>(false);
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [isEditRoleOpen, setIsEditRoleOpen] = useState<boolean>(false);
 
       const user = row.original;
 
@@ -42,6 +54,12 @@ export const columns: ColumnDef<User>[] = [
           <ConfirmPasswordResetDialog
             isOpen={isPassResetOpen}
             setIsOpen={setIsPassResetOpen}
+            onResetConfirm={() => handleReset(user.id)}
+          />
+          <EditUserRoleDialog
+            user={user}
+            isOpen={isEditRoleOpen}
+            setIsOpen={setIsEditRoleOpen}
           />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -51,7 +69,11 @@ export const columns: ColumnDef<User>[] = [
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsEditRoleOpen(true);
+                }}>
                 <UsersIcon />
                 <span>Edit Role assignments</span>
               </DropdownMenuItem>
@@ -59,9 +81,7 @@ export const columns: ColumnDef<User>[] = [
                 // variant="destructive"
                 onClick={(e) => {
                   e.preventDefault();
-                  toast.success(
-                    'User must reset their password upon the next login'
-                  );
+                  setIsPassResetOpen(true);
                 }}>
                 <LockIcon />
                 <span>Force Password reset</span>

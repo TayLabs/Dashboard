@@ -1,9 +1,12 @@
+'use server';
+
 import { getAccessToken } from '@/lib/auth';
 import { getCSRFToken } from '@/lib/auth/csrf';
 import type { User } from '@/types/User';
 import { cookies } from 'next/headers';
 import type { UUID } from 'node:crypto';
 import { Role } from './types/interface/Role';
+import { FormActionResponse } from './types/FormAction';
 
 export async function getAllUsers(): Promise<
   { success: true; users: User[] } | { success: false; error: string }
@@ -84,9 +87,7 @@ export async function forcePasswordReset(
 export async function updateRoles(
   userId: UUID,
   roleIds: UUID[]
-): Promise<
-  { success: true; roles: Role[] } | { success: false; error: string }
-> {
+): Promise<FormActionResponse<{ roles: Role[] }>> {
   try {
     const cookieStore = await cookies();
 

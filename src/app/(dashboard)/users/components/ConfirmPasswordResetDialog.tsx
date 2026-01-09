@@ -11,14 +11,16 @@ import {
 } from '@/components/ui/dialog';
 import { type Dispatch, type SetStateAction } from 'react';
 
-type ConfirmPasswordResetDialog = {
+type ConfirmPasswordResetDialog = Readonly<{
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
-};
+  onResetConfirm: () => void;
+}>;
 
 export function ConfirmPasswordResetDialog({
   isOpen,
   setIsOpen,
+  onResetConfirm,
 }: ConfirmPasswordResetDialog) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -32,7 +34,7 @@ export function ConfirmPasswordResetDialog({
             <Button variant="outline">Cancel</Button>
           </DialogClose>
           <DialogClose asChild>
-            <Button>Confirm</Button>
+            <Button onClick={onResetConfirm}>Confirm</Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>
