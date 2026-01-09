@@ -194,7 +194,7 @@ export default function EditKeyForm({
       <Dialog
         open={isOpen && Boolean(newKeyValue)}
         onOpenChange={(open) => {
-          setNewKeyValue(null);
+          // setNewKeyValue(null);
           setIsOpen(open);
         }}>
         <DialogContent>

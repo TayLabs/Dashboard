@@ -38,7 +38,6 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { PlusIcon, Trash2Icon } from 'lucide-react';
-import type { UUID } from 'node:crypto';
 
 const editServiceFormSchema = z.object({
   service: z.string().min(1, 'Service name is required'),

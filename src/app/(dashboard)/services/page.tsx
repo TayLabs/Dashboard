@@ -16,7 +16,7 @@ import {
   EmptyHeader,
   EmptyTitle,
 } from '@/components/ui/empty';
-import { PlusIcon } from 'lucide-react';
+import { AlertCircleIcon, PlusIcon } from 'lucide-react';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -25,12 +25,21 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default async function ServicesPage() {
   const response = await getAllServices();
 
   if (!response.success) {
-    return <p>Error getting services: {response.error}</p>;
+    return (
+      <Alert variant="destructive">
+        <AlertCircleIcon />
+        <AlertTitle>Error loading services</AlertTitle>
+        <AlertDescription>
+          <p>{response.error} - Please refresh to try again</p>
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   const internal = response.services.filter((service) => !service.isExternal);
@@ -50,7 +59,7 @@ export default async function ServicesPage() {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <h1 className="text-3xl font-medium">Select a service</h1>
+        <h1 className="text-3xl font-medium">Services</h1>
       </div>
       <section>
         <h3 className="text-xl font-medium my-4">External Services</h3>

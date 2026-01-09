@@ -1,4 +1,5 @@
 import { getAllRoles } from '@/actions/roles';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -22,14 +23,22 @@ import {
   ItemGroup,
   ItemTitle,
 } from '@/components/ui/item';
-import { PlusIcon } from 'lucide-react';
+import { AlertCircleIcon, PlusIcon } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function RolesPage() {
   const response = await getAllRoles();
 
   if (!response.success) {
-    return <p>Error getting roles: {response.error}</p>;
+    return (
+      <Alert variant="destructive">
+        <AlertCircleIcon />
+        <AlertTitle>Error loading roles</AlertTitle>
+        <AlertDescription>
+          <p>{response.error} - Please refresh to try again</p>
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   return (
@@ -46,10 +55,9 @@ export default async function RolesPage() {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <h1 className="text-3xl font-medium">Select a role</h1>
+        <h1 className="text-3xl font-medium">Roles</h1>
       </div>
       <section>
-        <h3 className="text-xl font-medium my-4">Roles</h3>
         {response.roles.length > 0 ? (
           <ItemGroup className="gap-4">
             {response.roles.map((role) => (
@@ -61,7 +69,7 @@ export default async function RolesPage() {
                       {!role.isExternal && (
                         <>
                           &nbsp;
-                          <sup className="text-xs text-muted-foreground">
+                          <sup className="text-xs text-muted-foreground bg-muted rounded-full px-2 py-1">
                             internal
                           </sup>
                         </>
@@ -73,7 +81,7 @@ export default async function RolesPage() {
                 <ItemActions>
                   <Link href={`/roles/${role.id}`}>
                     <Button variant="outline" size="sm">
-                      Edit
+                      {!role.isExternal ? 'View' : 'Edit'}
                     </Button>
                   </Link>
                 </ItemActions>

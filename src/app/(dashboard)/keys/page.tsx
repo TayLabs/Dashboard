@@ -1,4 +1,5 @@
 import { getAllKeys } from '@/actions/keys';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -23,14 +24,22 @@ import {
   ItemTitle,
 } from '@/components/ui/item';
 import Format from '@/utils/Format';
-import { PlusIcon } from 'lucide-react';
+import { AlertCircleIcon, PlusIcon } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function KeysPage() {
   const response = await getAllKeys();
 
   if (!response.success) {
-    return <p>Error getting keys: {response.error}</p>;
+    return (
+      <Alert variant="destructive">
+        <AlertCircleIcon />
+        <AlertTitle>Error loading keys</AlertTitle>
+        <AlertDescription>
+          <p>{response.error} - Please refresh to try again</p>
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   return (
@@ -47,10 +56,9 @@ export default async function KeysPage() {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <h1 className="text-3xl font-medium">Select a key</h1>
+        <h1 className="text-3xl font-medium">Keys</h1>
       </div>
       <section>
-        <h3 className="text-xl font-medium my-4">Keys</h3>
         {response.keys.length > 0 ? (
           <ItemGroup className="gap-4">
             {response.keys.map((key) => (
