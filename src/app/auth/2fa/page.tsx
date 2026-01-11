@@ -1,5 +1,7 @@
-import React from 'react';
+import { isAuthenticated } from '@/lib/auth';
 
-export default function TwoFactorPage() {
+export default async function TwoFactorPage() {
+	await isAuthenticated({ allowPending: ['2fa'] });
+
 	return <div>TwoFactorPage</div>;
 }
