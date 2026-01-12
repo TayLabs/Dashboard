@@ -17,6 +17,7 @@ const subDirectories = {
   '/roles': 'Auth',
   '/keys': 'Keys',
   '/users': 'Auth',
+  '/account': 'Account',
 } as Record<string, string>;
 
 export default function Header() {

@@ -19,6 +19,10 @@ const menu = {
     { title: 'Roles', url: '/roles' },
     { title: 'Users', url: '/users' },
   ],
+  '/account': [
+    { title: 'Profile', url: '/account' },
+    { title: 'Security', url: '/account/security' },
+  ],
 } as Record<string, MenuItem[]>;
 
 const sideMenuWidthClassName = 'md:w-72';
