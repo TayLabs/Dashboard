@@ -1,8 +1,9 @@
 'use server';
 
 import { getAccessToken } from '@/lib/auth';
+import { User } from '@/types/User';
 
-export async function getProfile() {
+export async function getProfile(): Promise<User | null> {
   const { accessToken } = await getAccessToken();
 
   const response = await fetch('http://localhost:7313/api/v1/account/profile', {

@@ -6,9 +6,15 @@ import { useWindowScrollPosition } from '@/hooks/use-scroll-position';
 import { useSideMenu } from '@/hooks/use-sidemenu';
 import { useUser } from '@/hooks/useUser';
 import { cn } from '@/utils';
-import { MenuIcon } from 'lucide-react';
+import { MenuIcon, SettingsIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
 
 const headerHeightClassName = 'h-12 md:h-18';
 
@@ -59,7 +65,22 @@ export default function Header() {
           {user === undefined ? (
             <span>loading...</span>
           ) : user !== null ? (
-            <span className="mr-4">Hello, {user?.profile.displayName}</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost">
+                  {user.profile.displayName ||
+                    `${user.profile.firstName} ${user.profile.lastName}`}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <Link href="/account">
+                  <DropdownMenuItem>
+                    <SettingsIcon />
+                    <span>Account</span>
+                  </DropdownMenuItem>
+                </Link>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
             <Link href="/auth/login">
               <Button variant="default">Login</Button>
