@@ -15,13 +15,14 @@ import {
   InputOTPSlot,
 } from '@/components/ui/input-otp';
 import { useForm } from '@tanstack/react-form';
+import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import z from 'zod';
 
 const twoFactorFormSchema = z.object({
   code: z
     .string('Invalid token format')
     .length(6, 'Token must be 6 digits long')
-    .regex(/^\d{6}$/, 'Token must consist of 6 numbers'),
+    .regex(new RegExp(REGEXP_ONLY_DIGITS), 'Token must consist of 6 numbers'),
 });
 
 export default function TwoFactorForm() {
