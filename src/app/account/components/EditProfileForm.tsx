@@ -63,6 +63,7 @@ export default function EditProfileForm({
 
   return (
     <form
+      id="edit-profile-form"
       onSubmit={(e) => {
         e.preventDefault();
         form.handleSubmit();
@@ -185,7 +186,7 @@ export default function EditProfileForm({
           {([canSubmit, isSubmitting]) => (
             <Button
               type="submit"
-              form="login-form"
+              form="edit-profile-form"
               className="mt-4 w-full"
               disabled={!canSubmit}>
               {isSubmitting ? 'Saving...' : 'Save'}
