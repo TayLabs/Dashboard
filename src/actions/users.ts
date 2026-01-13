@@ -169,3 +169,43 @@ export async function updateRoles(
     }
   }
 }
+
+export async function toggleTwoFactor(
+  toggle: boolean
+): Promise<FormActionResponse> {
+  try {
+    const cookieStore = await cookies();
+
+    const csrf = await getCSRFToken();
+
+    const cookieHeader = cookieStore
+      .getAll()
+      .map(({ name, value }) => `${name}=${value}`)
+      .join('; ');
+    const { accessToken } = await getAccessToken();
+    const response = await fetch(
+      `http://localhost:7313/api/v1/account/two-factor/${toggle}`,
+      {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Cookie: cookieHeader,
+          'X-CSRF-Token': csrf,
+        },
+      }
+    );
+
+    const resBody = await response.json();
+
+    if (!resBody?.success) {
+      throw new Error(resBody.message);
+    }
+
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: (error as Error).message,
+    };
+  }
+}
