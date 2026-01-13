@@ -1,5 +1,7 @@
 'use client';
 
+import { updateProfile } from '@/actions/profile';
+import { Button } from '@/components/ui/button';
 import {
   Field,
   FieldError,
@@ -10,14 +12,19 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Profile } from '@/types/User';
 import { useForm } from '@tanstack/react-form';
+import { toast } from 'sonner';
 import z from 'zod';
 
 const editProfileFormSchema = z.object({
-  username: z.string(),
-  firstName: z.string(),
-  lastName: z.string(),
-  displayName: z.string(),
-  bio: z.string(),
+  username: z.string('Must be a valid string').min(1, 'Username is required'),
+  firstName: z
+    .string('Must be a valid string')
+    .min(1, 'First name is required'),
+  lastName: z.string('Must be a valid string').min(1, 'Last name is required'),
+  displayName: z
+    .string('Must be a valid string')
+    .min(1, 'Display name is required'),
+  bio: z.string('Must be a valid string'),
 });
 
 export default function EditProfileForm({
@@ -33,9 +40,25 @@ export default function EditProfileForm({
     },
     validators: {
       onSubmit: editProfileFormSchema,
-      onSubmitAsync: async ({ value: data }) => {},
+      onSubmitAsync: async ({ value: data }) => {
+        const response = await updateProfile();
+
+        if (!response.success) {
+          toast.error(response.error);
+
+          return {
+            username: response.errors?.username,
+            firstName: response.errors?.firstName,
+            lastName: response.errors?.lastName,
+            displayName: response.errors?.displayName,
+            bio: response.errors?.bio,
+          };
+        }
+      },
     },
-    onSubmit: () => {},
+    onSubmit: () => {
+      toast.success('Profile has been updated');
+    },
   });
 
   return (
@@ -154,6 +177,21 @@ export default function EditProfileForm({
             );
           }}
         </form.Field>
+        <form.Subscribe
+          selector={(formState) => [
+            formState.canSubmit,
+            formState.isSubmitting,
+          ]}>
+          {([canSubmit, isSubmitting]) => (
+            <Button
+              type="submit"
+              form="login-form"
+              className="mt-4 w-full"
+              disabled={!canSubmit}>
+              {isSubmitting ? 'Saving...' : 'Save'}
+            </Button>
+          )}
+        </form.Subscribe>
       </FieldGroup>
     </form>
   );
