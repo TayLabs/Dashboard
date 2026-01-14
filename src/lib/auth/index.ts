@@ -137,7 +137,7 @@ export async function refreshSession(request?: NextRequest): Promise<{
     const cookieHeaders = response.headers.getSetCookie();
     for (const cookieHeader of cookieHeaders) {
       const { name, value, ...options } = parseCookie(cookieHeader);
-
+      console.log(`Setting cookie: ${name}`);
       cookieStore.set(name, value, options);
       request?.cookies.set(name, value);
     }

@@ -1,6 +1,6 @@
 'use client';
 
-import { verifyTOTP } from '@/actions/totp';
+import { validateTOTP, verifyTOTP } from '@/actions/totp';
 import { Button } from '@/components/ui/button';
 import {
   Field,
@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/input-otp';
 import { useForm } from '@tanstack/react-form';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
+import { useRouter } from 'next/navigation';
 import z from 'zod';
 
 const twoFactorFormSchema = z.object({
@@ -26,24 +27,43 @@ const twoFactorFormSchema = z.object({
 });
 
 export default function TwoFactorForm() {
+  const router = useRouter();
   const form = useForm({
     defaultValues: {
       code: '',
     },
     validators: {
+      onChange: ({ value }) => {
+        if (value.code.length >= 6) {
+          form.handleSubmit();
+        }
+      },
       onSubmit: twoFactorFormSchema,
       onSubmitAsync: async ({ value: data }) => {
-        const response = await verifyTOTP(data);
+        const response = await validateTOTP(data);
 
         if (!response.success) {
           return {
-            errors: {
-              code: response.error,
+            fields: {
+              code: [{ message: response.error! }],
             },
           };
+        } else {
+          switch (response.pending) {
+            case 'passwordReset':
+              router.push('/auth/reset-password');
+              break;
+            case 'emailVerification':
+              router.push('/auth/verify-email');
+              break;
+            default:
+              router.push('/');
+              break;
+          }
         }
       },
     },
+    onSubmit: () => {},
   });
 
   return (

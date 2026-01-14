@@ -20,7 +20,6 @@ export default function EmailVerificationSendForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h3 className="text-2xl">Verification email</h3>
       <Button variant="default" type="submit">
         Re-send Verification
       </Button>

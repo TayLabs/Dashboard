@@ -6,15 +6,17 @@ import { useWindowScrollPosition } from '@/hooks/use-scroll-position';
 import { useSideMenu } from '@/hooks/use-sidemenu';
 import { useUser } from '@/hooks/useUser';
 import { cn } from '@/utils';
-import { MenuIcon, SettingsIcon } from 'lucide-react';
+import { LogOutIcon, MenuIcon, SettingsIcon } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
+import { logout } from '@/actions/auth';
+import { toast } from 'sonner';
 
 const headerHeightClassName = 'h-12 md:h-18';
 
@@ -27,6 +29,8 @@ const subDirectories = {
 } as Record<string, string>;
 
 export default function Header() {
+  const router = useRouter();
+
   const pathname = usePathname();
   const subDirectory =
     subDirectories[
@@ -72,13 +76,32 @@ export default function Header() {
                     `${user.profile.firstName} ${user.profile.lastName}`}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="grid gap-2 p-2">
                 <Link href="/account">
-                  <DropdownMenuItem>
-                    <SettingsIcon />
-                    <span>Account</span>
-                  </DropdownMenuItem>
+                  <Button variant="ghost">
+                    <DropdownMenuItem className="hover:bg-transparent">
+                      <SettingsIcon />
+                      <span>Account</span>
+                    </DropdownMenuItem>
+                  </Button>
                 </Link>
+                <Button
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    const response = await logout();
+
+                    if (!response.success) {
+                      toast.error(response.error);
+                    } else {
+                      router.push('/auth/login');
+                    }
+                  }}
+                  variant="ghost">
+                  <DropdownMenuItem className="hover:bg-transparent">
+                    <LogOutIcon />
+                    <span>Logout</span>
+                  </DropdownMenuItem>
+                </Button>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (

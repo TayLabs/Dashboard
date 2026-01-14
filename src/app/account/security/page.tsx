@@ -1,5 +1,3 @@
-import { Button } from '@/components/ui/button';
-import { Field, FieldLabel } from '@/components/ui/field';
 import {
   Item,
   ItemActions,
@@ -9,39 +7,90 @@ import {
   ItemTitle,
 } from '@/components/ui/item';
 import { isAuthenticated } from '@/lib/auth';
-import { PlusIcon, Trash2Icon } from 'lucide-react';
 import EnableTwoFactorSwitch from './EnableTwoFactorSwitch';
+import AddTwoFactorMethod from './AddTwoFactorMethod';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { getAllTOTP } from '@/actions/totp';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import Format from '@/utils/Format';
+import RemoveTwoFactorMethod from './RemoveTwoFactorMethod';
+import ResetPasswordForm from './ResetPasswordForm';
 
 export default async function SecurityPage() {
   await isAuthenticated();
 
+  const response = await getAllTOTP();
+
   return (
-    <section className="container max-w-3xl mx-auto px-6 py-12 flex flex-col gap-8">
-      <h3 className="text-2xl font-medium">Two-Factor authentication</h3>
-      <EnableTwoFactorSwitch />
-      <ItemGroup className="gap-6">
-        <Item variant="outline">
-          <ItemContent>
-            <ItemTitle>TOTP</ItemTitle>
-            <ItemDescription>
-              A totp token is linked to your account
-            </ItemDescription>
-          </ItemContent>
-          <ItemActions>
-            <Button variant="outline">Edit</Button>
-            <Button
-              variant="destructive"
-              size="icon"
-              className="bg-transparent hover:bg-red-600/5 border border-red-600 text-red-600">
-              <Trash2Icon />
-            </Button>
-          </ItemActions>
-        </Item>
-        <Button variant="outline" className="w-full">
-          <PlusIcon />
-          <span>Add two-factor method</span>
-        </Button>
-      </ItemGroup>
-    </section>
+    <div className="container max-w-2xl flex flex-col gap-8">
+      <div className="grid gap-2">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Home</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Profile</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <h1 className="text-3xl font-medium">Security</h1>
+        <p className="text-muted-foreground">
+          Edit security details linked to your account
+        </p>
+      </div>
+      <section className="grid gap-6">
+        <h4 className="text-xl font-medium">Two-Factor methods</h4>
+        {!response.success ? (
+          <Alert variant="destructive">
+            <AlertTitle>
+              Error fetching two-factor methods, try refreshing
+            </AlertTitle>
+            <AlertDescription>{response.error}</AlertDescription>
+          </Alert>
+        ) : (
+          <>
+            <EnableTwoFactorSwitch />
+            <ItemGroup className="gap-6">
+              {response.totpTokens.map((totpToken) => (
+                <Item key={totpToken.id} variant="outline">
+                  <ItemContent>
+                    <ItemTitle>TOTP</ItemTitle>
+                    <ItemDescription>
+                      <span>
+                        Authenticator app linked on&nbsp;
+                        {Format.date(totpToken.createdAt).dateTime}
+                      </span>
+                      {totpToken.lastUsedAt && (
+                        <span>
+                          ,&nbsp;last used&nbsp;
+                          {Format.date(totpToken.lastUsedAt).dateTime}
+                        </span>
+                      )}
+                    </ItemDescription>
+                  </ItemContent>
+                  <ItemActions>
+                    <RemoveTwoFactorMethod totpTokenId={totpToken.id} />
+                  </ItemActions>
+                </Item>
+              ))}
+              <AddTwoFactorMethod />
+            </ItemGroup>
+          </>
+        )}
+      </section>
+      <section className="grid gap-6">
+        <h4 className="text-xl font-medium">Reset password</h4>
+        <ResetPasswordForm />
+      </section>
+    </div>
   );
 }

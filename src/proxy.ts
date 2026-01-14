@@ -3,13 +3,13 @@ import {
   type NextRequest,
   NextResponse,
 } from 'next/server';
-import { refreshSession } from './lib/auth';
+import { getAccessToken } from './lib/auth';
 import AuthenticationError from './lib/auth/types/AuthenticationError';
 
 export async function proxy(request: NextRequest) {
   let accessToken: string | undefined = undefined;
   try {
-    accessToken = (await refreshSession(request)).accessToken;
+    accessToken = (await getAccessToken()).accessToken;
   } catch (error) {
     if (error instanceof AuthenticationError) {
       switch (error.code) {

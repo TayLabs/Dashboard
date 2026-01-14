@@ -1,6 +1,6 @@
 'use client';
 
-import { login } from '@/actions/auth';
+import { signup } from '@/actions/auth';
 import { Button } from '@/components/ui/button';
 import {
   Field,
@@ -17,30 +17,56 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import z from 'zod';
 
-const loginFormSchema = z.object({
+const signupFormSchema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  lastName: z.string().min(1, 'Last Name is required'),
   email: z.string().min(1, 'Email field is required'),
   password: z.string().min(1, 'Password field is required'),
+  passwordConfirm: z.string().min(1, 'Password confirm field is required'),
 });
 
-export default function LoginForm() {
+const signupFormSchemaOnBlur = z
+  .object({
+    firstName: z.string(),
+    lastName: z.string(),
+    email: z.string(),
+    password: z.string(),
+    passwordConfirm: z.string(),
+  })
+  .refine(
+    (data) => !data.passwordConfirm || data.password === data.passwordConfirm,
+    {
+      error: 'Passwords do not match',
+      path: ['passwordConfirm'],
+    }
+  );
+
+export default function SignupForm() {
   const router = useRouter();
   const form = useForm({
     defaultValues: {
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
+      passwordConfirm: '',
     },
     validators: {
-      onSubmit: loginFormSchema,
+      onBlur: signupFormSchemaOnBlur,
+      onSubmit: signupFormSchema,
       onSubmitAsync: async ({ value: data }) => {
-        const response = await login(data);
-        console.log(response);
+        const response = await signup(data);
+
         if (!response.success) {
           if (response.error) toast.error(response.error);
 
           return {
             fields: {
+              firstName: { message: response.errors?.firstName },
+              lastName: { message: response.errors?.lastName },
               email: { message: response.errors?.email },
               password: { message: response.errors?.password },
+              passwordConfirm: { message: response.errors?.passwordConfirm },
             },
           };
         } else {
@@ -51,7 +77,7 @@ export default function LoginForm() {
             case 'passwordReset':
               router.push('/auth/reset-password');
               break;
-            case 'emailVerification':
+            case 'emailVerification': // Should only ever be pending emailVerification as it's a new account, keeping others just incase
               router.push('/auth/verify-email');
               break;
             default:
@@ -66,12 +92,58 @@ export default function LoginForm() {
   return (
     <div className="grid gap-6">
       <form
-        id="login-form"
+        id="signup-form"
         onSubmit={(e) => {
           e.preventDefault();
           form.handleSubmit();
         }}>
         <FieldGroup>
+          <form.Field
+            name="firstName"
+            // eslint-disable-next-line react/no-children-prop
+            children={(field) => {
+              const isInvalid =
+                field.state.meta.isTouched && !field.state.meta.isValid;
+              return (
+                <Field data-invalid={isInvalid}>
+                  <FieldLabel>First Name</FieldLabel>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    required
+                    aria-invalid={isInvalid}
+                  />
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                </Field>
+              );
+            }}
+          />
+          <form.Field
+            name="lastName"
+            // eslint-disable-next-line react/no-children-prop
+            children={(field) => {
+              const isInvalid =
+                field.state.meta.isTouched && !field.state.meta.isValid;
+              return (
+                <Field data-invalid={isInvalid}>
+                  <FieldLabel>Last Name</FieldLabel>
+                  <Input
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    required
+                    aria-invalid={isInvalid}
+                  />
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
+                </Field>
+              );
+            }}
+          />
           <form.Field
             name="email"
             // eslint-disable-next-line react/no-children-prop
@@ -115,9 +187,30 @@ export default function LoginForm() {
                     aria-invalid={isInvalid}
                   />
                   {isInvalid && <FieldError errors={field.state.meta.errors} />}
-                  <FieldDescription className="text-right underline-offset-2">
-                    <Link href="/auth/forgot-password">Forgot Password?</Link>
-                  </FieldDescription>
+                </Field>
+              );
+            }}
+          />
+          <form.Field
+            name="passwordConfirm"
+            // eslint-disable-next-line react/no-children-prop
+            children={(field) => {
+              const isInvalid =
+                field.state.meta.isTouched && !field.state.meta.isValid;
+              return (
+                <Field data-invalid={isInvalid}>
+                  <FieldLabel>Confirm Password</FieldLabel>
+                  <Input
+                    type="password"
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    required
+                    aria-invalid={isInvalid}
+                  />
+                  {isInvalid && <FieldError errors={field.state.meta.errors} />}
                 </Field>
               );
             }}
@@ -129,7 +222,7 @@ export default function LoginForm() {
         {([canSubmit, isSubmitting]) => (
           <Button
             type="submit"
-            form="login-form"
+            form="signup-form"
             className="mt-4 w-full"
             disabled={!canSubmit}>
             {isSubmitting ? 'Saving...' : 'Save'}

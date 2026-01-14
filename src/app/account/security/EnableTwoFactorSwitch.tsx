@@ -3,13 +3,15 @@
 import { toggleTwoFactor } from '@/actions/users';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Switch } from '@/components/ui/switch';
+import { useUser } from '@/hooks/useUser';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 export default function EnableTwoFactorSwitch({
   disabled,
 }: Readonly<{ disabled?: boolean }>) {
-  const [value, setValue] = useState(false);
+  const { user } = useUser();
+  const [value, setValue] = useState(user?.twoFactorEnabled || false);
 
   const handleCheck = async (isChecked: boolean) => {
     if (!disabled) {
@@ -19,7 +21,11 @@ export default function EnableTwoFactorSwitch({
         toast.error(response.error);
       } else {
         setValue(isChecked);
-        toast.success('Two-Factor authentication has been enabled');
+        toast.success(
+          `Two-Factor authentication has been ${
+            isChecked ? 'enabled' : 'disabled'
+          }`
+        );
       }
     }
   };
