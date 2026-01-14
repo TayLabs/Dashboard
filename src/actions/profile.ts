@@ -7,61 +7,61 @@ import { cookies } from 'next/headers';
 import { FormActionResponse } from './types/FormAction';
 
 export async function getProfile(): Promise<User | null> {
-  const { accessToken } = await getAccessToken();
+	const { accessToken } = await getAccessToken();
 
-  const response = await fetch('http://localhost:7313/api/v1/account/profile', {
-    method: 'GET',
-    headers: {
-      Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
-    } as HeadersInit,
-  });
+	const response = await fetch('http://localhost:7313/api/v1/account/profile', {
+		method: 'GET',
+		headers: {
+			Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
+		} as HeadersInit,
+	});
 
-  const resBody = await response.json();
+	const resBody = await response.json();
 
-  if (!resBody.success) {
-    return null;
-  } else {
-    return resBody.data.profile;
-  }
+	if (!resBody.success) {
+		return null;
+	} else {
+		return resBody.data.profile;
+	}
 }
 
 export async function updateProfile(): Promise<
-  FormActionResponse<{ user: User }>
+	FormActionResponse<{ user: User }>
 > {
-  try {
-    const { accessToken } = await getAccessToken();
-    const cookieStore = await cookies();
+	try {
+		const { accessToken } = await getAccessToken();
+		const cookieStore = await cookies();
 
-    const csrf = await getCSRFToken();
+		const csrf = await getCSRFToken();
 
-    const cookieHeader = cookieStore
-      .getAll()
-      .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
-    const response = await fetch(
-      'http://localhost:7313/api/v1/account/profile',
-      {
-        method: 'PATCH',
-        headers: {
-          Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
-          Cookie: cookieHeader,
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrf,
-        } as HeadersInit,
-      }
-    );
+		const cookieHeader = cookieStore
+			.getAll()
+			.map(({ name, value }) => `${name}=${value}`)
+			.join('; ');
+		const response = await fetch(
+			'http://localhost:7313/api/v1/account/profile',
+			{
+				method: 'PATCH',
+				headers: {
+					Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
+					Cookie: cookieHeader,
+					'Content-Type': 'application/json',
+					'X-CSRF-Token': csrf,
+				} as HeadersInit,
+			}
+		);
 
-    const resBody = await response.json();
+		const resBody = await response.json();
 
-    if (!resBody.success) {
-      throw new Error(resBody.message);
-    } else {
-      return { success: true, user: resBody.data.profile };
-    }
-  } catch (error) {
-    return {
-      success: false,
-      error: (error as Error).message,
-    };
-  }
+		if (!resBody.success) {
+			throw new Error(resBody.message);
+		} else {
+			return { success: true, user: resBody.data.profile };
+		}
+	} catch (error) {
+		return {
+			success: false,
+			error: (error as Error).message,
+		};
+	}
 }
