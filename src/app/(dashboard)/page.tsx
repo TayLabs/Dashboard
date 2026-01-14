@@ -21,11 +21,13 @@ import {
   ItemGroup,
   ItemTitle,
 } from '@/components/ui/item';
+import { getAllUsers } from '@/actions/users';
 
 export default async function HomePage() {
   await isAuthenticated();
 
   const response = await getAllServices();
+  const responseUsers = await getAllUsers();
 
   return (
     <div className="container max-w-3xl mx-auto px-6 py-12 flex flex-col gap-8">
@@ -78,6 +80,37 @@ export default async function HomePage() {
               </Link>
             </EmptyContent>
           </Empty>
+        )}
+      </section>
+      <section>
+        <h2 className="text-2xl font-semibold mb-4">
+          Users in your environment
+        </h2>
+        {!responseUsers.success ? (
+          <Alert variant="destructive">
+            <AlertTitle>Error fetching services, try refreshing</AlertTitle>
+            <AlertDescription>{responseUsers.error}</AlertDescription>
+          </Alert>
+        ) : (
+          <div>
+            <Item>
+              <ItemContent>
+                <ItemTitle>
+                  You have&nbsp;
+                  {
+                    responseUsers.users.filter((user) => user.email !== 'admin')
+                      .length
+                  }
+                  &nbsp;users in your environment
+                </ItemTitle>
+              </ItemContent>
+              <ItemActions>
+                <Button variant="secondary">
+                  <Link href="/users">See all</Link>
+                </Button>
+              </ItemActions>
+            </Item>
+          </div>
         )}
       </section>
     </div>

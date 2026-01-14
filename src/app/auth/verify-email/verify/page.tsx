@@ -1,4 +1,5 @@
 import { verifyEmail } from '@/actions/email';
+import Link from 'next/link';
 
 type EmailVerificationVerifyProps = {
   searchParams?: Promise<{
@@ -34,6 +35,9 @@ export default async function EmailVerificationVerify({
   return (
     <section className="container max-w-sm">
       <h3 className="text-xl">Email verified!</h3>
+      <Link href="/" className="underline underline-offset-2">
+        View dashboard
+      </Link>
     </section>
   );
 }

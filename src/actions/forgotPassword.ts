@@ -1,31 +1,35 @@
-'use server';
-
+import { cookies } from 'next/headers';
+import { FormActionResponse } from './types/FormAction';
 import { getAccessToken } from '@/lib/auth';
 import { getCSRFToken } from '@/lib/auth/csrf';
-import { cookies } from 'next/headers';
 
-export async function requestEmailVerification() {
+export async function requestReset({
+  email,
+}: {
+  email: string;
+}): Promise<FormActionResponse> {
   try {
     const cookieStore = await cookies();
 
     const { accessToken } = await getAccessToken();
     const csrf = await getCSRFToken();
+
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
       .join('; ');
     const response = await fetch(
-      'http://localhost:7313/api/v1/auth/email/verify/request',
+      'http://localhost:7313/api/v1/auth/password/reset/request',
       {
         method: 'POST',
         headers: {
           Cookie: cookieHeader,
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${accessToken}`,
           'X-CSRF-Token': csrf,
-          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          linkBaseUrl: 'http://localhost:7919/auth/verify-email/verify',
+          email,
         }),
       }
     );
@@ -33,10 +37,7 @@ export async function requestEmailVerification() {
     const resBody = await response.json();
 
     if (!resBody.success) {
-      return {
-        success: false,
-        error: resBody.message || 'An unknown error occurred, please try again',
-      };
+      throw new Error(resBody.message);
     } else {
       return {
         success: true,
@@ -57,38 +58,47 @@ export async function requestEmailVerification() {
   }
 }
 
-export async function verifyEmail(token: string) {
+export async function resetPassword({
+  token,
+  password,
+  passwordConfirm,
+}: {
+  token: string;
+  password: string;
+  passwordConfirm: string;
+}): Promise<FormActionResponse> {
   try {
     const cookieStore = await cookies();
 
-    const queryString = new URLSearchParams({ t: token }).toString();
-
+    const { accessToken } = await getAccessToken();
     const csrf = await getCSRFToken();
+
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
       .join('; ');
     const response = await fetch(
-      `http://localhost:7313/api/v1/auth/email/verify?${queryString}`,
+      `http://localhost:7313/api/v1/auth/password/reset?t=${token}`,
       {
-        method: 'POST',
+        method: 'PATCH',
         headers: {
           Cookie: cookieHeader,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
           'X-CSRF-Token': csrf,
         },
+        body: JSON.stringify({
+          password,
+          passwordConfirm,
+        }),
       }
     );
 
     const resBody = await response.json();
 
     if (!resBody.success) {
-      return {
-        success: false,
-        error: resBody.message || 'An unknown error occurred, please try again',
-      };
+      throw new Error(resBody.message);
     } else {
-      cookieStore.delete('_access_t'); // Delete access token so it refreshes without pending: emailVerification
-
       return {
         success: true,
       };
