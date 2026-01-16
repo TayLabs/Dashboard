@@ -37,6 +37,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
 	matcher: [
-		'/((?!auth/login|auth/sign-up|auth/forgot-password|api|_next|.*\\..*).*)', // Everything except /api and static files
+		'/((?!auth/login|auth/sign-up|auth/forgot-password|auth/verify-email/verify|api|_next|.*\\..*).*)', // Everything except /api and static files
 	],
 } satisfies MiddlewareConfig;

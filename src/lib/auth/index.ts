@@ -83,13 +83,16 @@ async function refreshSession(request?: NextRequest): Promise<{
 
 	const cookieStore = await cookies();
 
-	console.log('refreshing');
 	const accessToken = cookieStore.get('_access_t')?.value;
 	if (accessToken) {
 		const payload = verifyToken(accessToken);
 
 		// is token invalid/not verified or going to expire in 2 minutes, if yes, continue refreshing
-		if (payload && (payload.exp - 2 * 60) * 1000 > Date.now()) {
+		if (
+			payload &&
+			(payload.exp - 2 * 60) * 1000 > Date.now() &&
+			!payload.pending
+		) {
 			return { accessToken, pending: payload.pending };
 		}
 	}
@@ -149,17 +152,26 @@ async function refreshSession(request?: NextRequest): Promise<{
 
 	// If already refreshing, await that promise and return the data
 	if (refreshing.has(selectedSessionId)) {
-		return await refreshing.get(selectedSessionId)!;
+		const result = await refreshing.get(selectedSessionId)!;
+		cookieStore.set('_access_t', result.accessToken, {
+			httpOnly: true,
+			path: '/',
+			domain: 'localhost',
+			sameSite: 'lax',
+		});
+		return result;
 	}
 
 	const refreshPromise = refresh();
 	refreshing.set(selectedSessionId, refreshPromise);
 
-	const result = await refreshPromise;
+	try {
+		const result = await refreshPromise;
 
-	refreshing.delete(selectedSessionId);
-
-	return result;
+		return result;
+	} finally {
+		refreshing.delete(selectedSessionId);
+	}
 	// } catch (error) {
 	//   return null;
 	// }
@@ -172,8 +184,8 @@ export async function getAccessToken() {
 	const cookieStore = await cookies();
 
 	let token = cookieStore.get('_access_t')?.value as string | undefined;
+
 	const isServerComponent = await isExecutedFromServerComponent();
-	console.log('is ' + (isServerComponent ? 'server' : 'proxy'));
 	if (!isServerComponent) {
 		const response = await refreshSession();
 		token = response?.accessToken;
