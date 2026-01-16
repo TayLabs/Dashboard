@@ -83,9 +83,7 @@ export default async function HomePage() {
         )}
       </section>
       <section>
-        <h2 className="text-2xl font-semibold mb-4">
-          Users in your environment
-        </h2>
+        <h2 className="text-2xl font-semibold mb-4">Users</h2>
         {!responseUsers.success ? (
           <Alert variant="destructive">
             <AlertTitle>Error fetching services, try refreshing</AlertTitle>
@@ -98,8 +96,9 @@ export default async function HomePage() {
                 <ItemTitle>
                   You have&nbsp;
                   {
-                    responseUsers.users.filter((user) => user.email !== 'admin')
-                      .length
+                    responseUsers.users.filter((user) =>
+                      user.email.includes('@')
+                    ).length
                   }
                   &nbsp;users in your environment
                 </ItemTitle>

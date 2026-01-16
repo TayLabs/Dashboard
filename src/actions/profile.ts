@@ -2,7 +2,7 @@
 
 import { getAccessToken } from '@/lib/auth';
 import { getCSRFToken } from '@/lib/auth/csrf';
-import { User } from '@/types/User';
+import { Profile, User } from '@/types/User';
 import { cookies } from 'next/headers';
 import { FormActionResponse } from './types/FormAction';
 
@@ -32,9 +32,9 @@ export async function getProfile(): Promise<User | null> {
   }
 }
 
-export async function updateProfile(): Promise<
-  FormActionResponse<{ user: User }>
-> {
+export async function updateProfile(
+  data: Omit<Profile, 'id' | 'updatedAt' | 'avatarUrl'>
+): Promise<FormActionResponse<{ user: User }>> {
   try {
     const { accessToken } = await getAccessToken();
     const cookieStore = await cookies();
@@ -55,6 +55,13 @@ export async function updateProfile(): Promise<
           'Content-Type': 'application/json',
           'X-CSRF-Token': csrf,
         } as HeadersInit,
+        body: JSON.stringify({
+          username: data.username,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          displayName: data.displayName,
+          bio: data.bio,
+        }),
       }
     );
 
