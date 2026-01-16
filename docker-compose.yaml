@@ -9,8 +9,8 @@ services:
       POSTGRES_DB: auth
       POSTGRES_USER: tayLabAuth
       POSTGRES_PASSWORD: hvpoawev0wqh-sabipegpa!
-    ports:
-      - '5919:5432'
+    # ports:
+    #   - '5919:5432'
     volumes:
       - auth-postgres:/var/lib/postgresql/data
     healthcheck:
@@ -19,13 +19,15 @@ services:
       timeout: 5s
       retries: 5
     profiles: ['development', 'production', 'test']
+    networks:
+      - database
 
   auth-redis:
     image: redis:latest
     container_name: ${CONTAINER_PREFIX:-taylab}-auth-redis
     restart: unless-stopped
-    ports:
-      - '6919:6379'
+    # ports:
+    #   - '6919:6379'
     volumes:
       - auth-redis:/data
     healthcheck:
@@ -34,6 +36,8 @@ services:
       timeout: 5s
       retries: 5
     profiles: ['development', 'production', 'test']
+    networks:
+      - database
 
   keys-postgres:
     image: postgres:latest
@@ -43,8 +47,8 @@ services:
       POSTGRES_DB: keys
       POSTGRES_USER: tayLabKeys
       POSTGRES_PASSWORD: onaroewth4p9g8ahsoef
-    ports:
-      - '3919:5432'
+    # ports:
+    #   - '3919:5432'
     volumes:
       - keys-postgres:/var/lib/postgresql/data
     healthcheck:
@@ -53,13 +57,15 @@ services:
       timeout: 5s
       retries: 5
     profiles: ['development', 'production', 'test']
+    networks:
+      - database
 
   taylab-keys:
     image: taylabs-keys # If the compose fails, be sure to clone this repo and run the docker:build script beforehand
     container_name: ${CONTAINER_PREFIX:-taylab}-keys
     restart: unless-stopped
-    ports:
-      - '2919:7212'
+    # ports:
+    #   - '2919:7212'
     environment:
       DATABASE_URL: postgres://tayLabKeys:onaroewth4p9g8ahsoef@${CONTAINER_PREFIX:-taylab}-keys-postgres:5432/keys
       ACCESS_TOKEN_SECRET: aopvnwoaht
@@ -73,6 +79,10 @@ services:
       timeout: 5s
       retries: 5
     profiles: ['development', 'production', 'test']
+    networks:
+      - frontend
+      - backend
+      - database
 
   taylab-mail:
     image: taylabs-mail # If the compose fails, be sure to clone this repo and run the docker:build script beforehand
@@ -81,8 +91,8 @@ services:
     environment:
       KEY_SERVICE_BASE_URL: http://${CONTAINER_PREFIX:-taylab}-keys:2919
       MAILTRAP_API_KEY: ${MAILTRAP_API_KEY} # Set with export MAILTRAP_API_KEY=value (setx for powershell)
-    ports:
-      - '4919:7414'
+    # ports:
+    #   - '4919:7414'
     depends_on:
       taylab-keys:
         condition: service_healthy
@@ -92,6 +102,9 @@ services:
       timeout: 5s
       retries: 5
     profiles: ['development', 'production', 'test']
+    networks:
+      - backend
+      - database
 
   taylab-auth:
     image: taylabs-auth
@@ -109,8 +122,8 @@ services:
       EMAIL_VERIFICATION_SECRET: apovbnap943ano
       FRONTEND_URL: http://localhost:9919 # Publicly viewable url for use in email links
       HOST_DOMAIN: localhost # root public url used for setting cookie's domain attribute (i.e. *.domain.com)
-    ports:
-      - '7919:7313'
+    # ports:
+    #   - '7919:7313'
     depends_on:
       auth-postgres:
         condition: service_healthy
@@ -124,6 +137,10 @@ services:
       timeout: 5s
       retries: 5
     profiles: ['development', 'production', 'test']
+    networks:
+      - frontend
+      - backend
+      - database
 
   taylab-dashboard:
     # build:
@@ -143,8 +160,25 @@ services:
       taylab-auth:
         condition: service_healthy
     profiles: ['production', 'test']
+    networks:
+      - frontend
+      - backend
 
 volumes:
   auth-postgres:
   auth-redis:
   keys-postgres:
+
+networks:
+  frontend:
+    name: taylab_frontend_net
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.host_binding_ipv4: '127.0.0.1'
+  backend:
+    name: taylab_backend_net
+    driver: bridge
+  database:
+    name: taylab_database_net
+    driver: bridge
+    internal: true
