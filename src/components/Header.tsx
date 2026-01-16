@@ -77,31 +77,32 @@ export default function Header() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="grid gap-2 p-2">
-                <Link href="/account">
-                  <Button variant="ghost">
-                    <DropdownMenuItem className="hover:bg-transparent">
+                <DropdownMenuItem className="h-min">
+                  <Link href="/account">
+                    <Button variant="ghost" className="hover:bg-transparent">
                       <SettingsIcon />
                       <span>Account</span>
-                    </DropdownMenuItem>
-                  </Button>
-                </Link>
-                <Button
-                  onClick={async (e) => {
-                    e.preventDefault();
-                    const response = await logout();
+                    </Button>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="h-min">
+                  <Button
+                    className="hover:bg-transparent"
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      const response = await logout();
 
-                    if (!response.success) {
-                      toast.error(response.error);
-                    } else {
-                      router.push('/auth/login');
-                    }
-                  }}
-                  variant="ghost">
-                  <DropdownMenuItem className="hover:bg-transparent">
+                      if (!response.success) {
+                        toast.error(response.error);
+                      } else {
+                        router.push('/auth/login');
+                      }
+                    }}
+                    variant="ghost">
                     <LogOutIcon />
                     <span>Logout</span>
-                  </DropdownMenuItem>
-                </Button>
+                  </Button>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (

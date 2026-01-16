@@ -15,7 +15,7 @@ export async function requestEmailVerification() {
       .map(({ name, value }) => `${name}=${value}`)
       .join('; ');
     const response = await fetch(
-      'http://localhost:7313/api/v1/auth/email/verify/request',
+      `http://${process.env.AUTH_API_URI}/api/v1/auth/email/verify/request`,
       {
         method: 'POST',
         headers: {
@@ -25,7 +25,7 @@ export async function requestEmailVerification() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          linkBaseUrl: 'http://localhost:7919/auth/verify-email/verify',
+          linkBaseUrl: `http://${process.env.HOST_URI}/auth/verify-email/verify`,
         }),
       }
     );
@@ -69,7 +69,7 @@ export async function verifyEmail(token: string) {
       .map(({ name, value }) => `${name}=${value}`)
       .join('; ');
     const response = await fetch(
-      `http://localhost:7313/api/v1/auth/email/verify?${queryString}`,
+      `http://${process.env.AUTH_API_URI}/api/v1/auth/email/verify?${queryString}`,
       {
         method: 'POST',
         headers: {

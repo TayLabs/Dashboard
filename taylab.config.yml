@@ -1,6 +1,2 @@
 service: dashboard
 permissions:
-  - key: user.write
-    description: Modify user data
-    scopes:
-      - user

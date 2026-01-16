@@ -13,7 +13,7 @@ export async function getAllRoles(): Promise<
   try {
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      'http://localhost:7313/api/v1/admin/roles',
+      `http://${process.env.AUTH_API_URI}/api/v1/admin/roles`,
       {
         method: 'GET',
         headers: {
@@ -35,7 +35,7 @@ export async function getRole(
   try {
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      `http://localhost:7313/api/v1/admin/roles/${id}`,
+      `http://${process.env.AUTH_API_URI}/api/v1/admin/roles/${id}`,
       {
         method: 'GET',
         headers: {
@@ -67,7 +67,7 @@ export async function addRole(
       .join('; ');
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      `http://localhost:7313/api/v1/admin/roles`,
+      `http://${process.env.AUTH_API_URI}/api/v1/admin/roles`,
       {
         method: 'POST',
         headers: {
@@ -104,7 +104,7 @@ export async function updateRole(
       .join('; ');
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      `http://localhost:7313/api/v1/admin/roles/${id}`,
+      `http://${process.env.AUTH_API_URI}/api/v1/admin/roles/${id}`,
       {
         method: 'PATCH',
         headers: {
@@ -138,7 +138,7 @@ export async function removeRole(
       .join('; ');
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      `http://localhost:7313/api/v1/admin/roles/${id}`,
+      `http://${process.env.AUTH_API_URI}/api/v1/admin/roles/${id}`,
       {
         method: 'DELETE',
         headers: {

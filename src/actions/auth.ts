@@ -22,18 +22,21 @@ export async function login({
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
       .join('; ');
-    const response = await fetch('http://localhost:7313/api/v1/auth/login', {
-      method: 'POST',
-      headers: {
-        Cookie: cookieHeader,
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrf,
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
+    const response = await fetch(
+      `http://${process.env.AUTH_API_URI}/api/v1/auth/login`,
+      {
+        method: 'POST',
+        headers: {
+          Cookie: cookieHeader,
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrf,
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      }
+    );
 
     const resBody = await response.json();
 
@@ -103,22 +106,25 @@ export async function signup({
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
       .join('; ');
-    const response = await fetch('http://localhost:7313/api/v1/auth/signup', {
-      method: 'POST',
-      headers: {
-        Cookie: cookieHeader,
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrf,
-      },
-      body: JSON.stringify({
-        firstName,
-        lastName,
-        email,
-        password,
-        passwordConfirm,
-        linkBaseUrl: `http://localhost:7919/auth/verify-email/verify`,
-      }),
-    });
+    const response = await fetch(
+      `http://${process.env.AUTH_API_URI}/api/v1/auth/signup`,
+      {
+        method: 'POST',
+        headers: {
+          Cookie: cookieHeader,
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrf,
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          password,
+          passwordConfirm,
+          linkBaseUrl: `http://${process.env.HOST_URI}/auth/verify-email/verify`,
+        }),
+      }
+    );
 
     const resBody = await response.json();
 
@@ -186,7 +192,7 @@ export async function resetPassword({
       .map(({ name, value }) => `${name}=${value}`)
       .join('; ');
     const response = await fetch(
-      'http://localhost:7313/api/v1/auth/password/change',
+      `http://${process.env.AUTH_API_URI}/api/v1/auth/password/change`,
       {
         method: 'PATCH',
         headers: {
@@ -250,15 +256,18 @@ export async function logout(): Promise<FormActionResponse> {
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
       .join('; ');
-    const response = await fetch(`http://localhost:7313/api/v1/auth/logout`, {
-      method: 'DELETE',
-      headers: {
-        Cookie: cookieHeader,
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-        'X-CSRF-Token': csrf,
-      },
-    });
+    const response = await fetch(
+      `http://${process.env.AUTH_API_URI}/api/v1/auth/logout`,
+      {
+        method: 'DELETE',
+        headers: {
+          Cookie: cookieHeader,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+          'X-CSRF-Token': csrf,
+        },
+      }
+    );
 
     const resBody = await response.json();
 

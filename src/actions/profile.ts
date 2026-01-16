@@ -11,7 +11,7 @@ export async function getProfile(): Promise<User | null> {
     const { accessToken } = await getAccessToken();
 
     const response = await fetch(
-      'http://localhost:7313/api/v1/account/profile',
+      `http://${process.env.AUTH_API_URI}/api/v1/account/profile`,
       {
         method: 'GET',
         headers: {
@@ -46,7 +46,7 @@ export async function updateProfile(
       .map(({ name, value }) => `${name}=${value}`)
       .join('; ');
     const response = await fetch(
-      'http://localhost:7313/api/v1/account/profile',
+      `http://${process.env.AUTH_API_URI}/api/v1/account/profile`,
       {
         method: 'PATCH',
         headers: {

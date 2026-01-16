@@ -1,0 +1,149 @@
+name: ${CONTAINER_PREFIX:-taylab}-services
+
+services:
+  auth-postgres:
+    image: postgres:latest
+    container_name: ${CONTAINER_PREFIX:-taylab}-auth-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: auth
+      POSTGRES_USER: tayLabAuth
+      POSTGRES_PASSWORD: hvpoawev0wqh-sabipegpa!
+    ports:
+      - '5919:5432'
+    volumes:
+      - auth-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U tayLabAuth -d auth']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    profiles: ['development', 'production', 'test']
+
+  auth-redis:
+    image: redis:latest
+    container_name: ${CONTAINER_PREFIX:-taylab}-auth-redis
+    restart: unless-stopped
+    ports:
+      - '6919:6379'
+    volumes:
+      - auth-redis:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    profiles: ['development', 'production', 'test']
+
+  keys-postgres:
+    image: postgres:latest
+    container_name: ${CONTAINER_PREFIX:-taylab}-keys-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: keys
+      POSTGRES_USER: tayLabKeys
+      POSTGRES_PASSWORD: onaroewth4p9g8ahsoef
+    ports:
+      - '3919:5432'
+    volumes:
+      - keys-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U tayLabKeys -d keys']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    profiles: ['development', 'production', 'test']
+
+  taylab-keys:
+    image: taylabs-keys # If the compose fails, be sure to clone this repo and run the docker:build script beforehand
+    container_name: ${CONTAINER_PREFIX:-taylab}-keys
+    restart: unless-stopped
+    ports:
+      - '2919:7212'
+    environment:
+      DATABASE_URL: postgres://tayLabKeys:onaroewth4p9g8ahsoef@${CONTAINER_PREFIX:-taylab}-keys-postgres:5432/keys
+      ACCESS_TOKEN_SECRET: aopvnwoaht
+      API_KEY_TTL: 120d
+    depends_on:
+      keys-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -I http://localhost:7212']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    profiles: ['development', 'production', 'test']
+
+  taylab-mail:
+    image: taylabs-mail # If the compose fails, be sure to clone this repo and run the docker:build script beforehand
+    container_name: ${CONTAINER_PREFIX:-taylab}-mail
+    restart: unless-stopped
+    environment:
+      KEY_SERVICE_BASE_URL: http://${CONTAINER_PREFIX:-taylab}-keys:2919
+      MAILTRAP_API_KEY: ${MAILTRAP_API_KEY} # Set with export MAILTRAP_API_KEY=value (setx for powershell)
+    ports:
+      - '4919:7414'
+    depends_on:
+      taylab-keys:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -I http://localhost:7414']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    profiles: ['development', 'production', 'test']
+
+  taylab-auth:
+    image: taylabs-auth
+    container_name: ${CONTAINER_PREFIX:-taylab}-auth
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://tayLabAuth:hvpoawev0wqh-sabipegpa!@${CONTAINER_PREFIX:-taylab}-auth-postgres:5432/auth
+      REDIS_URI: ${CONTAINER_PREFIX:-taylab}-auth-redis:6379
+      MAIL_API: ${CONTAINER_PREFIX:-taylab}-mail:7212
+      MAIL_API_KEY: ${MAIL_API_KEY} # Set with export MAIL_API_KEY=value (setx for powershell)
+      ACCESS_TOKEN_SECRET: aopvnwoaht
+      REFRESH_TOKEN_SECRET: arwgzfd43qafzsgarwegrea
+      TOTP_ENCRYPT_KEY: apbvw9ah432na
+      RESET_TOKEN_HASH_KEY: avnw9e934phpguar
+      EMAIL_VERIFICATION_SECRET: apovbnap943ano
+      FRONTEND_URL: http://localhost:9919 # Publicly viewable url for use in email links
+      HOST_DOMAIN: localhost # root public url used for setting cookie's domain attribute (i.e. *.domain.com)
+    ports:
+      - '7919:7313'
+    depends_on:
+      auth-postgres:
+        condition: service_healthy
+      auth-redis:
+        condition: service_healthy
+      taylab-mail:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -I http://localhost:7313']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    profiles: ['development', 'production', 'test']
+  taylab-dashboard:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    image: taylabs-dashboard # Run pnpm docker:build beforehand, then run docker compose --profile production up -d
+    container_name: ${CONTAINER_PREFIX:-taylab}-dashboard
+    restart: unless-stopped
+    environment:
+      SERVICE_NAME: dashboard
+      ACCESS_TOKEN_SECRET: aopvnwoaht
+      AUTH_API_URI: ${CONTAINER_PREFIX:-taylab}-auth:7919
+      HOST_URI: localhost:8919 # Public facing url for site to redirect too
+    ports:
+      - '8919:7919'
+    depends_on:
+      taylab-auth:
+        condition: service_healthy
+    profiles: ['production', 'test']
+
+volumes:
+  auth-postgres:
+  auth-redis:
+  keys-postgres:

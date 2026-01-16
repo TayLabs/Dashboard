@@ -9,9 +9,12 @@ export async function initializeCSRFToken(): Promise<string> {
   let csrfToken = cookieStore.get('csrf');
 
   if (!csrfToken || !csrfToken.value) {
-    const response = await fetch('http://localhost:7313/api/v1/auth/csrf', {
-      method: 'GET',
-    });
+    const response = await fetch(
+      `http://${process.env.AUTH_API_URI}/api/v1/auth/csrf`,
+      {
+        method: 'GET',
+      }
+    );
 
     const resBody = await response.json();
 

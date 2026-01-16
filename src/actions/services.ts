@@ -16,7 +16,7 @@ export async function getAllServices(): Promise<
 
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      'http://localhost:7313/api/v1/admin/services',
+      `http://${process.env.AUTH_API_URI}/api/v1/admin/services`,
       {
         method: 'GET',
         headers: {
@@ -104,7 +104,7 @@ export async function getService(
   try {
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      `http://localhost:7313/api/v1/admin/services/${name}`,
+      `http://${process.env.AUTH_API_URI}/api/v1/admin/services/${name}`,
       {
         method: 'GET',
         headers: {
@@ -181,7 +181,7 @@ export async function registerService(data: {
       .join('; ');
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      `http://localhost:7313/api/v1/admin/services/register`,
+      `http://${process.env.AUTH_API_URI}/api/v1/admin/services/register`,
       {
         method: 'POST',
         headers: {
@@ -258,7 +258,7 @@ export async function updateService(
       .join('; ');
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      `http://localhost:7313/api/v1/admin/services/${name}`,
+      `http://${process.env.AUTH_API_URI}/api/v1/admin/services/${name}`,
       {
         method: 'PATCH',
         headers: {
@@ -323,7 +323,7 @@ export async function removeService(name: string) {
       .join('; ');
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      `http://localhost:7313/api/v1/admin/services/${name}`,
+      `http://${process.env.AUTH_API_URI}/api/v1/admin/services/${name}`,
       {
         method: 'DELETE',
         headers: {
