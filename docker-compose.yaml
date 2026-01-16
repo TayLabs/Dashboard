@@ -124,6 +124,7 @@ services:
       timeout: 5s
       retries: 5
     profiles: ['development', 'production', 'test']
+
   taylab-dashboard:
     # build:
     #   context: .
@@ -134,7 +135,7 @@ services:
     environment:
       SERVICE_NAME: dashboard
       ACCESS_TOKEN_SECRET: aopvnwoaht
-      AUTH_API_URI: ${CONTAINER_PREFIX:-taylab}-auth:7919
+      AUTH_API_URI: ${CONTAINER_PREFIX:-taylab}-auth:7313
       HOST_URI: localhost:8919 # Public facing url for site to redirect too
     ports:
       - '8919:7919'
