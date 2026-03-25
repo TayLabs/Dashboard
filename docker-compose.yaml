@@ -114,7 +114,7 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://tayLabAuth:${AUTH_DB_PASSWORD}@${CONTAINER_PREFIX:-taylab}-auth-postgres:5432/auth
-      REDIS_URI: rediss://:${AUTH_REDIS_PASSWORD}@${CONTAINER_PREFIX:-taylab-auth}-redis:6313
+      REDIS_URI: redis://:${AUTH_REDIS_PASSWORD}@${CONTAINER_PREFIX:-taylab-auth}-redis:6313
       MAIL_API: ${CONTAINER_PREFIX:-taylab}-mail:7212
       MAIL_API_KEY: ${MAIL_API_KEY} # Set with export MAIL_API_KEY=value (setx for powershell)
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
@@ -183,4 +183,4 @@ networks:
   database:
     name: taylab_database_net
     driver: bridge
-    internal: true
+    # internal: true
