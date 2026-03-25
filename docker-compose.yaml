@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_DB: auth
       POSTGRES_USER: tayLabAuth
-      POSTGRES_PASSWORD: hvpoawev0wqh-sabipegpa!
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
     # ports:
     #   - '5919:5432'
     volumes:
@@ -31,7 +31,7 @@ services:
     volumes:
       - auth-redis:/data
     environment:
-      - REDIS_PASSWORD=password
+      - REDIS_PASSWORD=${AUTH_REDIS_PASSWORD}
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -48,7 +48,7 @@ services:
     environment:
       POSTGRES_DB: keys
       POSTGRES_USER: tayLabKeys
-      POSTGRES_PASSWORD: onaroewth4p9g8ahsoef
+      POSTGRES_PASSWORD: ${KEYS_DATABASE_PASSWORD}
     # ports:
     #   - '3919:5432'
     volumes:
@@ -69,8 +69,8 @@ services:
     # ports:
     #   - '2919:7212'
     environment:
-      DATABASE_URL: postgres://tayLabKeys:onaroewth4p9g8ahsoef@${CONTAINER_PREFIX:-taylab}-keys-postgres:5432/keys
-      ACCESS_TOKEN_SECRET: aopvnwoaht
+      DATABASE_URL: postgres://tayLabKeys:${KEYS_DATABASE_PASSWORD}@${CONTAINER_PREFIX:-taylab}-keys-postgres:5432/keys
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
       API_KEY_TTL: 120d
     depends_on:
       keys-postgres:
@@ -82,8 +82,8 @@ services:
       retries: 5
     profiles: ["development", "production", "test"]
     networks:
-      - frontend
       - backend
+      - frontend
       - database
 
   taylab-mail:
@@ -113,15 +113,15 @@ services:
     container_name: ${CONTAINER_PREFIX:-taylab}-auth
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgres://tayLabAuth:hvpoawev0wqh-sabipegpa!@${CONTAINER_PREFIX:-taylab}-auth-postgres:5432/auth
-      REDIS_URI: rediss://:password@${CONTAINER_PREFIX:-taylab-auth}-redis:6313
+      DATABASE_URL: postgres://tayLabAuth:${AUTH_DB_PASSWORD}@${CONTAINER_PREFIX:-taylab}-auth-postgres:5432/auth
+      REDIS_URI: rediss://:${AUTH_REDIS_PASSWORD}@${CONTAINER_PREFIX:-taylab-auth}-redis:6313
       MAIL_API: ${CONTAINER_PREFIX:-taylab}-mail:7212
       MAIL_API_KEY: ${MAIL_API_KEY} # Set with export MAIL_API_KEY=value (setx for powershell)
-      ACCESS_TOKEN_SECRET: aopvnwoaht
-      REFRESH_TOKEN_SECRET: arwgzfd43qafzsgarwegrea
-      TOTP_ENCRYPT_KEY: apbvw9ah432na
-      RESET_TOKEN_HASH_KEY: avnw9e934phpguar
-      EMAIL_VERIFICATION_SECRET: apovbnap943ano
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
+      REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
+      TOTP_ENCRYPT_KEY: ${TOTP_ENCRYPT_KEY}
+      RESET_TOKEN_HASH_KEY: ${RESET_TOKEN_HASH_KEY}
+      EMAIL_VERIFICATION_SECRET: ${EMAIL_VERIFICATION_SECRET}
       FRONTEND_URL: http://localhost:9919 # Publicly viewable url for use in email links
       HOST_DOMAIN: localhost # root public url used for setting cookie's domain attribute (i.e. *.domain.com)
     # ports:
@@ -140,8 +140,8 @@ services:
       retries: 5
     profiles: ["development", "production", "test"]
     networks:
-      - frontend
       - backend
+      - frontend
       - database
 
   taylab-dashboard:
@@ -153,7 +153,7 @@ services:
     restart: unless-stopped
     environment:
       SERVICE_NAME: dashboard
-      ACCESS_TOKEN_SECRET: aopvnwoaht
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
       AUTH_API_URI: ${CONTAINER_PREFIX:-taylab}-auth:7313
       HOST_URI: localhost:8919 # Public facing url for site to redirect too
     ports:
