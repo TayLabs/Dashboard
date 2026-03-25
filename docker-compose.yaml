@@ -14,11 +14,11 @@ services:
     volumes:
       - auth-postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U tayLabAuth -d auth']
+      test: ["CMD-SHELL", "pg_isready -U tayLabAuth -d auth"]
       interval: 10s
       timeout: 5s
       retries: 5
-    profiles: ['development', 'production', 'test']
+    profiles: ["development", "production", "test"]
     networks:
       - database
 
@@ -30,12 +30,14 @@ services:
     #   - '6919:6379'
     volumes:
       - auth-redis:/data
+    environment:
+      - REDIS_PASSWORD=password
     healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
-    profiles: ['development', 'production', 'test']
+    profiles: ["development", "production", "test"]
     networks:
       - database
 
@@ -52,11 +54,11 @@ services:
     volumes:
       - keys-postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U tayLabKeys -d keys']
+      test: ["CMD-SHELL", "pg_isready -U tayLabKeys -d keys"]
       interval: 10s
       timeout: 5s
       retries: 5
-    profiles: ['development', 'production', 'test']
+    profiles: ["development", "production", "test"]
     networks:
       - database
 
@@ -74,11 +76,11 @@ services:
       keys-postgres:
         condition: service_healthy
     healthcheck:
-      test: ['CMD-SHELL', 'curl -I http://localhost:7212']
+      test: ["CMD-SHELL", "curl -I http://localhost:7212"]
       interval: 10s
       timeout: 5s
       retries: 5
-    profiles: ['development', 'production', 'test']
+    profiles: ["development", "production", "test"]
     networks:
       - frontend
       - backend
@@ -97,11 +99,11 @@ services:
       taylab-keys:
         condition: service_healthy
     healthcheck:
-      test: ['CMD-SHELL', 'curl -I http://localhost:7414']
+      test: ["CMD-SHELL", "curl -I http://localhost:7414"]
       interval: 10s
       timeout: 5s
       retries: 5
-    profiles: ['development', 'production', 'test']
+    profiles: ["development", "production", "test"]
     networks:
       - backend
       - database
@@ -112,7 +114,7 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://tayLabAuth:hvpoawev0wqh-sabipegpa!@${CONTAINER_PREFIX:-taylab}-auth-postgres:5432/auth
-      REDIS_URI: ${CONTAINER_PREFIX:-taylab}-auth-redis:6379
+      REDIS_URI: rediss://:password@${CONTAINER_PREFIX:-taylab-auth}-redis:6313
       MAIL_API: ${CONTAINER_PREFIX:-taylab}-mail:7212
       MAIL_API_KEY: ${MAIL_API_KEY} # Set with export MAIL_API_KEY=value (setx for powershell)
       ACCESS_TOKEN_SECRET: aopvnwoaht
@@ -132,11 +134,11 @@ services:
       taylab-mail:
         condition: service_healthy
     healthcheck:
-      test: ['CMD-SHELL', 'curl -I http://localhost:7313']
+      test: ["CMD-SHELL", "curl -I http://localhost:7313"]
       interval: 10s
       timeout: 5s
       retries: 5
-    profiles: ['development', 'production', 'test']
+    profiles: ["development", "production", "test"]
     networks:
       - frontend
       - backend
@@ -155,11 +157,11 @@ services:
       AUTH_API_URI: ${CONTAINER_PREFIX:-taylab}-auth:7313
       HOST_URI: localhost:8919 # Public facing url for site to redirect too
     ports:
-      - '8919:7919'
+      - "8919:7919"
     depends_on:
       taylab-auth:
         condition: service_healthy
-    profiles: ['production', 'test']
+    profiles: ["production", "test"]
     networks:
       - frontend
       - backend
@@ -174,7 +176,7 @@ networks:
     name: taylab_frontend_net
     driver: bridge
     driver_opts:
-      com.docker.network.bridge.host_binding_ipv4: '127.0.0.1'
+      com.docker.network.bridge.host_binding_ipv4: "127.0.0.1"
   backend:
     name: taylab_backend_net
     driver: bridge
