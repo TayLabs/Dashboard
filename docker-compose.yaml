@@ -12,7 +12,7 @@ services:
     # ports:
     #   - '5919:5432'
     volumes:
-      - auth-postgres:/var/lib/postgresql/data
+      - auth-postgres:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U tayLabAuth -d auth"]
       interval: 10s
@@ -52,7 +52,7 @@ services:
     # ports:
     #   - '3919:5432'
     volumes:
-      - keys-postgres:/var/lib/postgresql/data
+      - keys-postgres:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U tayLabKeys -d keys"]
       interval: 10s
