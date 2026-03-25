@@ -3,7 +3,6 @@ name: ${CONTAINER_PREFIX:-taylab}-services
 services:
   auth-postgres:
     image: postgres:latest
-    container_name: ${CONTAINER_PREFIX:-taylab}-auth-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: auth
@@ -24,7 +23,6 @@ services:
 
   auth-redis:
     image: redis:latest
-    container_name: ${CONTAINER_PREFIX:-taylab}-auth-redis
     restart: unless-stopped
     # ports:
     #   - '6919:6379'
@@ -43,7 +41,6 @@ services:
 
   keys-postgres:
     image: postgres:latest
-    container_name: ${CONTAINER_PREFIX:-taylab}-keys-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: keys
@@ -64,12 +61,11 @@ services:
 
   taylab-keys:
     image: taylorkelley/taylabs-keys:latest
-    container_name: ${CONTAINER_PREFIX:-taylab}-keys
     restart: unless-stopped
     # ports:
     #   - '2919:7212'
     environment:
-      DATABASE_URL: postgres://tayLabKeys:${KEYS_DATABASE_PASSWORD}@${CONTAINER_PREFIX:-taylab}-keys-postgres:5432/keys
+      DATABASE_URL: postgres://tayLabKeys:${KEYS_DATABASE_PASSWORD}@keys-postgres:5432/keys
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
       API_KEY_TTL: 120d
     depends_on:
@@ -88,10 +84,9 @@ services:
 
   taylab-mail:
     image: taylorkelley/taylabs-mail:latest
-    container_name: ${CONTAINER_PREFIX:-taylab}-mail
     restart: unless-stopped
     environment:
-      KEY_SERVICE_BASE_URL: http://${CONTAINER_PREFIX:-taylab}-keys:2919
+      KEY_SERVICE_BASE_URL: http://keys:2919
       MAILTRAP_API_KEY: ${MAILTRAP_API_KEY} # Set with export MAILTRAP_API_KEY=value (setx for powershell)
     # ports:
     #   - '4919:7414'
@@ -110,12 +105,11 @@ services:
 
   taylab-auth:
     image: taylorkelley/taylabs-auth:latest
-    container_name: ${CONTAINER_PREFIX:-taylab}-auth
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgres://tayLabAuth:${AUTH_DB_PASSWORD}@${CONTAINER_PREFIX:-taylab}-auth-postgres:5432/auth
-      REDIS_URI: redis://:${AUTH_REDIS_PASSWORD}@${CONTAINER_PREFIX:-taylab-auth}-redis:6313
-      MAIL_API: ${CONTAINER_PREFIX:-taylab}-mail:7212
+      DATABASE_URL: postgres://tayLabAuth:${AUTH_DB_PASSWORD}@auth-postgres:5432/auth
+      REDIS_URI: redis://:${AUTH_REDIS_PASSWORD}@auth-redis:6313
+      MAIL_API: taylab-mail:7212
       MAIL_API_KEY: ${MAIL_API_KEY} # Set with export MAIL_API_KEY=value (setx for powershell)
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
       REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
@@ -149,12 +143,11 @@ services:
       context: .
       dockerfile: Dockerfile
     # image: taylabs-dashboard # Run pnpm docker:build beforehand, then run docker compose --profile production up -d
-    container_name: ${CONTAINER_PREFIX:-taylab}-dashboard
     restart: unless-stopped
     environment:
       SERVICE_NAME: dashboard
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
-      AUTH_API_URI: ${CONTAINER_PREFIX:-taylab}-auth:7313
+      AUTH_API_URI: taylab-auth:7313
       HOST_URI: localhost:8919 # Public facing url for site to redirect too
     ports:
       - "8919:7919"
