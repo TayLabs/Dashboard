@@ -86,7 +86,7 @@ services:
     image: taylorkelley/taylabs-mail:latest
     restart: unless-stopped
     environment:
-      KEY_SERVICE_BASE_URL: http://keys:2919
+      KEY_SERVICE_BASE_URL: http://taylab-keys:2919
       MAILTRAP_API_KEY: ${MAILTRAP_API_KEY} # Set with export MAILTRAP_API_KEY=value (setx for powershell)
     # ports:
     #   - '4919:7414'
@@ -108,7 +108,7 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://tayLabAuth:${AUTH_DB_PASSWORD}@auth-postgres:5432/auth
-      REDIS_URI: redis://:${AUTH_REDIS_PASSWORD}@auth-redis:6313
+      REDIS_URI: redis://:${AUTH_REDIS_PASSWORD}@auth-redis:6379
       MAIL_API: taylab-mail:7212
       MAIL_API_KEY: ${MAIL_API_KEY} # Set with export MAIL_API_KEY=value (setx for powershell)
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
