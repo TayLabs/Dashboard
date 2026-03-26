@@ -1,33 +1,35 @@
-'use client';
+"use client";
 
-import { login } from '@/actions/auth';
-import { Button } from '@/components/ui/button';
+import { login } from "@/actions/auth";
+import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
-import { useForm } from '@tanstack/react-form';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import z from 'zod';
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { useForm } from "@tanstack/react-form";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import z from "zod";
 
 const loginFormSchema = z.object({
-  email: z.string().min(1, 'Email field is required'),
-  password: z.string().min(1, 'Password field is required'),
+  email: z.string().min(1, "Email field is required"),
+  password: z.string().min(1, "Password field is required"),
 });
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
   const form = useForm({
     defaultValues: {
-      email: '',
-      password: '',
+      email: searchParams.get("email") || "",
+      password: searchParams.get("password") || "",
     },
     validators: {
       onSubmit: loginFormSchema,
@@ -45,17 +47,17 @@ export default function LoginForm() {
           };
         } else {
           switch (response.pending) {
-            case '2fa':
-              router.push('/auth/2fa');
+            case "2fa":
+              router.push("/auth/2fa");
               break;
-            case 'passwordReset':
-              router.push('/auth/reset-password');
+            case "passwordReset":
+              router.push("/auth/reset-password");
               break;
-            case 'emailVerification':
-              router.push('/auth/verify-email');
+            case "emailVerification":
+              router.push("/auth/verify-email");
               break;
             default:
-              router.push('/');
+              router.push("/");
               break;
           }
         }
@@ -70,7 +72,8 @@ export default function LoginForm() {
         onSubmit={(e) => {
           e.preventDefault();
           form.handleSubmit();
-        }}>
+        }}
+      >
         <FieldGroup>
           <form.Field
             name="email"
@@ -125,14 +128,16 @@ export default function LoginForm() {
         </FieldGroup>
       </form>
       <form.Subscribe
-        selector={(formState) => [formState.canSubmit, formState.isSubmitting]}>
+        selector={(formState) => [formState.canSubmit, formState.isSubmitting]}
+      >
         {([canSubmit, isSubmitting]) => (
           <Button
             type="submit"
             form="login-form"
             className="mt-4 w-full"
-            disabled={!canSubmit}>
-            {isSubmitting ? 'Saving...' : 'Save'}
+            disabled={!canSubmit}
+          >
+            {isSubmitting ? "Saving..." : "Save"}
           </Button>
         )}
       </form.Subscribe>

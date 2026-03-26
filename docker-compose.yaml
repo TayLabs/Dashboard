@@ -119,7 +119,7 @@ services:
       FRONTEND_URL: http://localhost:9919 # Publicly viewable url for use in email links
       HOST_DOMAIN: localhost # root public url used for setting cookie's domain attribute (i.e. *.domain.com)
     # ports:
-    #   - '7919:7313'
+    #   - "7313:7313"
     depends_on:
       auth-postgres:
         condition: service_healthy
