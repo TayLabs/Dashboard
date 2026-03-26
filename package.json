@@ -11,7 +11,7 @@
     "docker:start": "docker compose --profile development start",
     "docker:stop": "docker compose --profile development stop",
     "docker:down": "docker compose --profile development down",
-    "docker:build": "docker build -t taylabs-dashboard ."
+    "docker:build": "docker build -t taylorkelley/taylabs-dashboard ."
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.3.3",

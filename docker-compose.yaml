@@ -142,7 +142,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    # image: taylabs-dashboard # Run pnpm docker:build beforehand, then run docker compose --profile production up -d
+    # image: taylorkelley/taylabs-dashboard # Run pnpm docker:build beforehand, then run docker compose --profile production up -d
     restart: unless-stopped
     environment:
       SERVICE_NAME: dashboard
