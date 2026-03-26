@@ -33,6 +33,6 @@ USER nextjs
 EXPOSE 7919
 
 ENV PORT=7919
-ENV HOSTNAME="localhost"
+ENV HOSTNAME="0.0.0.0"
 
 CMD ["node", "server.js"]
