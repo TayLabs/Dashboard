@@ -1,12 +1,12 @@
-'use server';
+"use server";
 
-import { getAccessToken } from '@/lib/auth';
-import { getCSRFToken } from '@/lib/auth/csrf';
-import type { User } from '@/types/User';
-import { cookies } from 'next/headers';
-import type { UUID } from 'node:crypto';
-import { Role } from './types/interface/Role';
-import { FormActionResponse } from './types/FormAction';
+import { getAccessToken } from "@/lib/auth";
+import { getCSRFToken } from "@/lib/auth/csrf";
+import type { User } from "@/types/User";
+import { cookies } from "next/headers";
+import type { UUID } from "node:crypto";
+import { Role } from "./types/interface/Role";
+import { FormActionResponse } from "./types/FormAction";
 
 export async function getAllUsers(): Promise<
   { success: true; users: User[] } | { success: false; error: string }
@@ -16,11 +16,11 @@ export async function getAllUsers(): Promise<
     const response = await fetch(
       `http://${process.env.AUTH_API_URI}/api/v1/admin/users`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-      }
+      },
     ).then((res) => res.json());
     if (!response.success) throw new Error(response.message);
 
@@ -37,14 +37,14 @@ export async function getAllUsers(): Promise<
     } else {
       return {
         success: false,
-        error: 'An unknown error occured, please try again',
+        error: "An unknown error occured, please try again",
       };
     }
   }
 }
 
 export async function getUserWithRoles(
-  userId: UUID
+  userId: UUID,
 ): Promise<
   | { success: true; user: User & { roles: Role[] } }
   | { success: false; error: string }
@@ -54,11 +54,11 @@ export async function getUserWithRoles(
     const response = await fetch(
       `http://${process.env.AUTH_API_URI}/api/v1/admin/users/${userId}/roles`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-      }
+      },
     ).then((res) => res.json());
     if (!response.success) throw new Error(response.message);
 
@@ -75,14 +75,14 @@ export async function getUserWithRoles(
     } else {
       return {
         success: false,
-        error: 'An unknown error occured, please try again',
+        error: "An unknown error occured, please try again",
       };
     }
   }
 }
 
 export async function forcePasswordReset(
-  userId: UUID
+  userId: UUID,
 ): Promise<{ success: true } | { success: false; error: string }> {
   try {
     const cookieStore = await cookies();
@@ -92,18 +92,18 @@ export async function forcePasswordReset(
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const { accessToken } = await getAccessToken();
     const response = await fetch(
       `http://${process.env.AUTH_API_URI}/api/v1/admin/users/${userId}/force-password-reset`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           Cookie: cookieHeader,
-          'X-CSRF-Token': csrf,
+          "X-CSRF-Token": csrf,
         },
-      }
+      },
     ).then((res) => res.json());
     if (!response.success) throw new Error(response.message);
 
@@ -119,7 +119,7 @@ export async function forcePasswordReset(
     } else {
       return {
         success: false,
-        error: 'An unknown error occured, please try again',
+        error: "An unknown error occured, please try again",
       };
     }
   }
@@ -127,7 +127,7 @@ export async function forcePasswordReset(
 
 export async function updateRoles(
   userId: UUID,
-  roleIds: UUID[]
+  roleIds: UUID[],
 ): Promise<FormActionResponse<{ roles: Role[] }>> {
   try {
     const cookieStore = await cookies();
@@ -137,20 +137,20 @@ export async function updateRoles(
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const { accessToken } = await getAccessToken();
     const response = await fetch(
       `http://${process.env.AUTH_API_URI}/api/v1/admin/users/${userId}/roles`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           Cookie: cookieHeader,
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrf,
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrf,
         },
         body: JSON.stringify({ roles: roleIds }),
-      }
+      },
     ).then((res) => res.json());
     if (!response.success) throw new Error(response.message);
 
@@ -167,14 +167,14 @@ export async function updateRoles(
     } else {
       return {
         success: false,
-        error: 'An unknown error occured, please try again',
+        error: "An unknown error occured, please try again",
       };
     }
   }
 }
 
 export async function toggleTwoFactor(
-  toggle: boolean
+  toggle: boolean,
 ): Promise<FormActionResponse> {
   try {
     const cookieStore = await cookies();
@@ -184,20 +184,20 @@ export async function toggleTwoFactor(
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const { accessToken } = await getAccessToken();
     const response = await fetch(
-      `http://localhost:7313/api/v1/account/security/two-factor/${
-        toggle ? 'on' : 'off'
+      `${process.env.AUTH_API_URL}/api/v1/account/security/two-factor/${
+        toggle ? "on" : "off"
       }`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           Cookie: cookieHeader,
-          'X-CSRF-Token': csrf,
+          "X-CSRF-Token": csrf,
         },
-      }
+      },
     );
 
     const resBody = await response.json();
