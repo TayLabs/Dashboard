@@ -36,7 +36,7 @@ export default function SideMenu() {
         .reduce((acc, curr) => (acc.length > curr.length ? acc : curr), "") // Find the most specific matching menu item (longest one is most specific)
     ];
 
-  const { isOpen } = useSideMenu();
+  const { isOpen, setIsOpen } = useSideMenu();
   const isMobile = useIsMobile();
 
   return (
@@ -60,6 +60,7 @@ export default function SideMenu() {
               key={`${i}-${title}`}
               className="text-xl font-medium hover:bg-muted hover:shadow-sm cursor-pointer transition-[background-color_box-shadow] duration-300 px-5 py-3 rounded-lg"
               href={url}
+              onClick={() => setIsOpen(false)}
             >
               {title}
             </Link>
