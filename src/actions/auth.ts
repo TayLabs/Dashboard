@@ -1,10 +1,10 @@
-'use server';
+"use server";
 
-import { parseCookie } from '@/utils/cookies';
-import { type FormActionResponse } from './types/FormAction';
-import { getCSRFToken } from '@/lib/auth/csrf';
-import { cookies } from 'next/headers';
-import { getAccessToken, PendingActionType } from '@/lib/auth';
+import { parseCookie } from "@/utils/cookies";
+import { type FormActionResponse } from "./types/FormAction";
+import { getCSRFToken } from "@/lib/auth/csrf";
+import { cookies } from "next/headers";
+import { getAccessToken, PendingActionType } from "@/lib/auth";
 
 export async function login({
   email,
@@ -21,21 +21,21 @@ export async function login({
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const response = await fetch(
       `http://${process.env.AUTH_API_URI}/api/v1/auth/login`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
           Cookie: cookieHeader,
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrf,
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrf,
         },
         body: JSON.stringify({
           email,
           password,
         }),
-      }
+      },
     );
 
     const resBody = await response.json();
@@ -43,16 +43,16 @@ export async function login({
     if (!resBody.success) {
       return {
         success: false,
-        error: resBody.message || 'An unknown error occurred, please try again',
+        error: resBody.message || "An unknown error occurred, please try again",
       };
     } else {
       const token = resBody.data.accessToken;
-      cookieStore.set('_access_t', token, {
+      cookieStore.set("_access_t", token, {
         // expires: ... // Session cookie, refreshes on each new visit/session
         httpOnly: true,
-        path: '/',
-        domain: 'localhost',
-        sameSite: 'lax',
+        path: "/",
+        domain: `.${process.env.HOST_DOMAIN}`,
+        sameSite: "lax",
       });
 
       // Set cookies for login action
@@ -78,7 +78,7 @@ export async function login({
     } else {
       return {
         success: false,
-        error: 'An unknown error occured, please try again',
+        error: "An unknown error occured, please try again",
       };
     }
   }
@@ -105,15 +105,15 @@ export async function signup({
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const response = await fetch(
       `http://${process.env.AUTH_API_URI}/api/v1/auth/signup`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
           Cookie: cookieHeader,
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrf,
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrf,
         },
         body: JSON.stringify({
           firstName,
@@ -123,7 +123,7 @@ export async function signup({
           passwordConfirm,
           linkBaseUrl: `http://${process.env.HOST_URI}/auth/verify-email/verify`,
         }),
-      }
+      },
     );
 
     const resBody = await response.json();
@@ -131,16 +131,16 @@ export async function signup({
     if (!resBody.success) {
       return {
         success: false,
-        error: resBody.message || 'An unknown error occurred, please try again',
+        error: resBody.message || "An unknown error occurred, please try again",
       };
     } else {
       const token = resBody.data.accessToken;
-      cookieStore.set('_access_t', token, {
+      cookieStore.set("_access_t", token, {
         // expires: ... // Session cookie, refreshes on each new visit/session
         httpOnly: true,
-        path: '/',
-        domain: 'localhost',
-        sameSite: 'lax',
+        path: "/",
+        domain: `.${process.env.HOST_DOMAIN}`,
+        sameSite: "lax",
       });
 
       // Set cookies for login action
@@ -166,7 +166,7 @@ export async function signup({
     } else {
       return {
         success: false,
-        error: 'An unknown error occured, please try again',
+        error: "An unknown error occured, please try again",
       };
     }
   }
@@ -190,23 +190,23 @@ export async function resetPassword({
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const response = await fetch(
       `http://${process.env.AUTH_API_URI}/api/v1/auth/password/change`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
           Cookie: cookieHeader,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
-          'X-CSRF-Token': csrf,
+          "X-CSRF-Token": csrf,
         },
         body: JSON.stringify({
           currentPassword,
           password,
           passwordConfirm,
         }),
-      }
+      },
     );
 
     const resBody = await response.json();
@@ -214,7 +214,7 @@ export async function resetPassword({
     if (!resBody.success) {
       throw new Error(resBody.message);
     } else {
-      cookieStore.delete('_access_t');
+      cookieStore.delete("_access_t");
 
       // Set cookies for login action
       const cookieHeaders = response.headers.getSetCookie();
@@ -238,7 +238,7 @@ export async function resetPassword({
     } else {
       return {
         success: false,
-        error: 'An unknown error occured, please try again',
+        error: "An unknown error occured, please try again",
       };
     }
   }
@@ -255,18 +255,18 @@ export async function logout(): Promise<FormActionResponse> {
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const response = await fetch(
       `http://${process.env.AUTH_API_URI}/api/v1/auth/logout`,
       {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
           Cookie: cookieHeader,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
-          'X-CSRF-Token': csrf,
+          "X-CSRF-Token": csrf,
         },
-      }
+      },
     );
 
     const resBody = await response.json();
@@ -274,7 +274,7 @@ export async function logout(): Promise<FormActionResponse> {
     if (!resBody.success) {
       throw new Error(resBody.message);
     } else {
-      cookieStore.delete('_access_t');
+      cookieStore.delete("_access_t");
 
       // Set cookies for login action
       const cookieHeaders = response.headers.getSetCookie();

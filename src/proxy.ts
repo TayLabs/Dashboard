@@ -2,9 +2,9 @@ import {
   type MiddlewareConfig,
   type NextRequest,
   NextResponse,
-} from 'next/server';
-import { getAccessToken } from './lib/auth';
-import AuthenticationError from './lib/auth/types/AuthenticationError';
+} from "next/server";
+import { getAccessToken } from "./lib/auth";
+import AuthenticationError from "./lib/auth/types/AuthenticationError";
 
 export async function proxy(request: NextRequest) {
   let accessToken: string | undefined = undefined;
@@ -13,11 +13,11 @@ export async function proxy(request: NextRequest) {
   } catch (error) {
     if (error instanceof AuthenticationError) {
       switch (error.code) {
-        case 'NFND':
-        case 'UNKN':
-          if (request.nextUrl.pathname !== '/auth/login') {
+        case "NFND":
+        case "UNKN":
+          if (request.nextUrl.pathname !== "/auth/login") {
             return NextResponse.redirect(
-              `http://${process.env.HOST_URI}/auth/login`
+              `http://${process.env.HOST_URI}/auth/login`,
             );
           }
       }
@@ -27,10 +27,10 @@ export async function proxy(request: NextRequest) {
   const response = NextResponse.next();
 
   if (accessToken) {
-    response.cookies.set('_access_t', accessToken, {
+    response.cookies.set("_access_t", accessToken, {
       httpOnly: true,
-      domain: 'localhost',
-      path: '/',
+      domain: `.${process.env.HOST_DOMAIN}`,
+      path: "/",
     });
   }
 
@@ -39,6 +39,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!auth/login|auth/sign-up|auth/forgot-password|auth/verify-email/verify|api|_next|.*\\..*).*)', // Everything except /api and static files
+    "/((?!auth/login|auth/sign-up|auth/forgot-password|auth/verify-email/verify|api|_next|.*\\..*).*)", // Everything except /api and static files
   ],
 } satisfies MiddlewareConfig;

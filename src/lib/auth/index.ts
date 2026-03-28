@@ -1,17 +1,17 @@
-import 'server-only';
-import { cookies } from 'next/headers';
-import type { UUID } from 'node:crypto';
-import jwt from 'jsonwebtoken';
-import { parseCookie } from '@/utils/cookies';
-import { getCSRFToken } from './csrf';
+import "server-only";
+import { cookies } from "next/headers";
+import type { UUID } from "node:crypto";
+import jwt from "jsonwebtoken";
+import { parseCookie } from "@/utils/cookies";
+import { getCSRFToken } from "./csrf";
 import AuthenticationError, {
   Pending2FAError,
   PendingEmailVerificationError,
   PendingPasswordResetError,
-} from './types/AuthenticationError';
-import { redirect } from 'next/navigation';
-import { isExecutedFromServerComponent } from '@/utils/isServerComponent';
-import { NextRequest } from 'next/server';
+} from "./types/AuthenticationError";
+import { redirect } from "next/navigation";
+import { isExecutedFromServerComponent } from "@/utils/isServerComponent";
+import { NextRequest } from "next/server";
 
 type RefreshResponse =
   | {
@@ -28,9 +28,9 @@ type RefreshResponse =
     };
 
 export type PendingActionType =
-  | '2fa'
-  | 'passwordReset'
-  | 'emailVerification'
+  | "2fa"
+  | "passwordReset"
+  | "emailVerification"
   | null;
 
 export type AccessTokenPayload = {
@@ -49,7 +49,7 @@ function verifyToken(token: string) {
   try {
     return jwt.verify(
       token,
-      process.env.ACCESS_TOKEN_SECRET!
+      process.env.ACCESS_TOKEN_SECRET!,
     ) as AccessTokenPayload;
   } catch {
     return null;
@@ -83,7 +83,7 @@ async function refreshSession(request?: NextRequest): Promise<{
 
   const cookieStore = await cookies();
 
-  const accessToken = cookieStore.get('_access_t')?.value;
+  const accessToken = cookieStore.get("_access_t")?.value;
   if (accessToken) {
     const payload = verifyToken(accessToken);
 
@@ -97,11 +97,11 @@ async function refreshSession(request?: NextRequest): Promise<{
     }
   }
 
-  const selectedSessionId = cookieStore.get('_selected_s')?.value;
+  const selectedSessionId = cookieStore.get("_selected_s")?.value;
   if (!selectedSessionId) {
     throw new AuthenticationError(
-      'There is no active session, please login',
-      'NFND'
+      "There is no active session, please login",
+      "NFND",
     );
   }
 
@@ -111,16 +111,16 @@ async function refreshSession(request?: NextRequest): Promise<{
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const response = await fetch(
       `http://${process.env.AUTH_API_URI}/api/v1/auth/refresh`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
           Cookie: cookieHeader,
-          'X-CSRF-Token': csrf,
+          "X-CSRF-Token": csrf,
         },
-      }
+      },
     );
 
     const resBody = (await response.json()) as RefreshResponse;
@@ -128,19 +128,19 @@ async function refreshSession(request?: NextRequest): Promise<{
     if (!resBody.success) {
       throw new AuthenticationError(
         `Error refreshing: ${response.status} - ${resBody.message}`,
-        'UNKN'
+        "UNKN",
       );
     }
 
     const token = resBody.data.accessToken;
-    cookieStore.set('_access_t', token, {
+    cookieStore.set("_access_t", token, {
       // expires: ... // Session cookie, refreshes on each new visit/session
       httpOnly: true,
-      path: '/',
-      domain: 'localhost',
-      sameSite: 'lax',
+      path: "/",
+      domain: `.${process.env.HOST_DOMAIN}`,
+      sameSite: "lax",
     });
-    request?.cookies.set('_access_t', token);
+    request?.cookies.set("_access_t", token);
 
     const cookieHeaders = response.headers.getSetCookie();
     for (const cookieHeader of cookieHeaders) {
@@ -156,11 +156,11 @@ async function refreshSession(request?: NextRequest): Promise<{
   // If already refreshing, await that promise and return the data
   if (refreshing.has(selectedSessionId)) {
     const result = await refreshing.get(selectedSessionId)!;
-    cookieStore.set('_access_t', result.accessToken, {
+    cookieStore.set("_access_t", result.accessToken, {
       httpOnly: true,
-      path: '/',
-      domain: 'localhost',
-      sameSite: 'lax',
+      path: "/",
+      domain: `.${process.env.HOST_DOMAIN}`,
+      sameSite: "lax",
     });
     return result;
   }
@@ -186,7 +186,7 @@ async function refreshSession(request?: NextRequest): Promise<{
 export async function getAccessToken() {
   const cookieStore = await cookies();
 
-  let token = cookieStore.get('_access_t')?.value as string | undefined;
+  let token = cookieStore.get("_access_t")?.value as string | undefined;
 
   const isServerComponent = await isExecutedFromServerComponent();
   if (!isServerComponent) {
@@ -207,26 +207,26 @@ export async function isAuthenticated(options?: {
   try {
     const cookieStore = await cookies();
 
-    const accessToken = cookieStore.get('_access_t')?.value;
+    const accessToken = cookieStore.get("_access_t")?.value;
     const payload: AccessTokenPayload | null = accessToken
       ? await verifyToken(accessToken)
       : null;
 
     if (!payload) {
-      throw new AuthenticationError('Invalid Token', 'NFND');
+      throw new AuthenticationError("Invalid Token", "NFND");
     } else if (
       payload.pending != null &&
       !options?.allowPending?.includes(payload.pending)
     ) {
       switch (payload.pending) {
-        case '2fa':
-          throw new Pending2FAError('Access pending two-factor authentication');
-        case 'emailVerification':
+        case "2fa":
+          throw new Pending2FAError("Access pending two-factor authentication");
+        case "emailVerification":
           throw new PendingEmailVerificationError(
-            'Access pending email verification'
+            "Access pending email verification",
           );
-        case 'passwordReset':
-          throw new PendingPasswordResetError('Access pending password reset');
+        case "passwordReset":
+          throw new PendingPasswordResetError("Access pending password reset");
       }
     } else if (
       options?.scopes &&
@@ -234,20 +234,20 @@ export async function isAuthenticated(options?: {
       !payload.scopes.some((scope) => options.scopes?.includes(scope))
     ) {
       throw new AuthenticationError(
-        'User does not have permission to use this resource',
-        'NATH'
+        "User does not have permission to use this resource",
+        "NATH",
       );
     }
   } catch (error) {
     if (error instanceof AuthenticationError) {
       switch (error.code) {
-        case 'P2FA':
+        case "P2FA":
           return redirect(`http://${process.env.HOST_URI}/auth/2fa`);
-        case 'PPRS':
+        case "PPRS":
           return redirect(`http://${process.env.HOST_URI}/auth/reset-password`);
-        case 'PEMV':
+        case "PEMV":
           return redirect(`http://${process.env.HOST_URI}/auth/verify-email`);
-        case 'NATH':
+        case "NATH":
         default:
           return redirect(`http://${process.env.HOST_URI}/auth/login`);
       }

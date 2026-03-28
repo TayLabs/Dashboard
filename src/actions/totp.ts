@@ -1,12 +1,12 @@
-'use server';
+"use server";
 
-import { getAccessToken } from '@/lib/auth';
-import { FormActionResponse } from './types/FormAction';
-import { getCSRFToken } from '@/lib/auth/csrf';
-import { cookies } from 'next/headers';
-import { parseCookie } from '@/utils/cookies';
-import { UUID } from 'node:crypto';
-import { TOTPToken } from './types/interface/TOTPToken.interface';
+import { getAccessToken } from "@/lib/auth";
+import { FormActionResponse } from "./types/FormAction";
+import { getCSRFToken } from "@/lib/auth/csrf";
+import { cookies } from "next/headers";
+import { parseCookie } from "@/utils/cookies";
+import { UUID } from "node:crypto";
+import { TOTPToken } from "./types/interface/TOTPToken.interface";
 
 export async function getAllTOTP(): Promise<
   FormActionResponse<{ totpTokens: TOTPToken[] }>
@@ -16,11 +16,11 @@ export async function getAllTOTP(): Promise<
     const response = await fetch(
       `http://${process.env.AUTH_API_URI}/api/v1/account/security/totp/`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-      }
+      },
     );
 
     const resBody = await response.json();
@@ -51,23 +51,23 @@ export async function validateTOTP({
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
 
     const { accessToken } = await getAccessToken();
     const response = await fetch(
       `http://${process.env.AUTH_API_URI}/api/v1/auth/totp/validate`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
           Cookie: cookieHeader,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
-          'X-CSRF-Token': csrf,
+          "X-CSRF-Token": csrf,
         },
         body: JSON.stringify({
           code,
         }),
-      }
+      },
     );
 
     const resBody = await response.json();
@@ -76,12 +76,12 @@ export async function validateTOTP({
       throw new Error(resBody.message);
     } else {
       const token = resBody.data.accessToken;
-      cookieStore.set('_access_t', token, {
+      cookieStore.set("_access_t", token, {
         // expires: ... // Session cookie, refreshes on each new visit/session
         httpOnly: true,
-        path: '/',
-        domain: 'localhost',
-        sameSite: 'lax',
+        path: "/",
+        domain: `.${process.env.HOST_DOMAIN}`,
+        sameSite: "lax",
       });
 
       // Set cookies for login action
@@ -119,18 +119,18 @@ export async function createTOTP(): Promise<
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const { accessToken } = await getAccessToken();
     const response = await fetch(
       `http://${process.env.AUTH_API_URI}/api/v1/account/security/totp/create`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           Cookie: cookieHeader,
-          'X-CSRF-Token': csrf,
+          "X-CSRF-Token": csrf,
         },
-      }
+      },
     );
 
     const resBody = await response.json();
@@ -158,7 +158,7 @@ export async function verifyTOTP(
     code,
   }: {
     code: string;
-  }
+  },
 ): Promise<FormActionResponse> {
   try {
     const cookieStore = await cookies();
@@ -168,23 +168,23 @@ export async function verifyTOTP(
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
 
     const { accessToken } = await getAccessToken();
     const response = await fetch(
       `http://${process.env.AUTH_API_URI}/api/v1/account/security/totp/verify/${totpTokenId}`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
           Cookie: cookieHeader,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
-          'X-CSRF-Token': csrf,
+          "X-CSRF-Token": csrf,
         },
         body: JSON.stringify({
           code,
         }),
-      }
+      },
     );
 
     const resBody = await response.json();
@@ -213,18 +213,18 @@ export async function removeTOTP(id: UUID): Promise<FormActionResponse> {
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const { accessToken } = await getAccessToken();
     const response = await fetch(
       `http://${process.env.AUTH_API_URI}/api/v1/account/security/totp/remove/${id}`,
       {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           Cookie: cookieHeader,
-          'X-CSRF-Token': csrf,
+          "X-CSRF-Token": csrf,
         },
-      }
+      },
     );
 
     const resBody = await response.json();
