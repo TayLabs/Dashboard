@@ -1,23 +1,26 @@
-'use server';
+"use server";
 
-import { getAccessToken } from '@/lib/auth';
-import type { Key } from './types/interface/Key';
-import { UUID } from 'node:crypto';
-import { cookies } from 'next/headers';
-import { getCSRFToken } from '@/lib/auth/csrf';
-import { FormActionResponse } from './types/FormAction';
+import { getAccessToken } from "@/lib/auth";
+import type { Key } from "./types/interface/Key";
+import { UUID } from "node:crypto";
+import { cookies } from "next/headers";
+import { getCSRFToken } from "@/lib/auth/csrf";
+import { FormActionResponse } from "./types/FormAction";
 
 export async function getAllKeys(): Promise<
   { success: true; keys: Key[] } | { success: false; error: string }
 > {
   try {
     const { accessToken } = await getAccessToken();
-    const responseKeys = await fetch(`http://localhost:2313/api/v1/keys`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
+    const responseKeys = await fetch(
+      `${process.env.KEYS_API_URI}/api/v1/keys`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       },
-    }).then((res) => res.json());
+    ).then((res) => res.json());
     if (!responseKeys.success) throw new Error(responseKeys.message);
 
     return { success: true, keys: responseKeys.data.keys };
@@ -27,18 +30,18 @@ export async function getAllKeys(): Promise<
 }
 
 export async function getKey(
-  id: UUID
+  id: UUID,
 ): Promise<{ success: true; key: Key } | { success: false; error: string }> {
   try {
     const { accessToken } = await getAccessToken();
     const responseKeys = await fetch(
-      `http://localhost:2313/api/v1/keys/${id}`,
+      `${process.env.KEYS_API_URI}/api/v1/keys/${id}`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-      }
+      },
     ).then((res) => res.json());
     if (!responseKeys.success) throw new Error(responseKeys.message);
 
@@ -49,9 +52,9 @@ export async function getKey(
 }
 
 export async function addKey(
-  data: Pick<Key, 'name'> & {
+  data: Pick<Key, "name"> & {
     permissions: string[];
-  }
+  },
 ): Promise<FormActionResponse<{ key: Key; apiKey: string }>> {
   try {
     const cookieStore = await cookies();
@@ -61,18 +64,21 @@ export async function addKey(
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const { accessToken } = await getAccessToken();
-    const responseKeys = await fetch(`http://localhost:2313/api/v1/keys`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Cookie: cookieHeader,
-        'Content-Type': 'application/json',
-        'X-CSRF-Token': csrf,
+    const responseKeys = await fetch(
+      `${process.env.KEYS_API_URI}/api/v1/keys`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Cookie: cookieHeader,
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrf,
+        },
+        body: JSON.stringify(data),
       },
-      body: JSON.stringify(data),
-    }).then((res) => res.json());
+    ).then((res) => res.json());
 
     if (!responseKeys.success) throw new Error(responseKeys.message);
 
@@ -88,9 +94,9 @@ export async function addKey(
 
 export async function updateKey(
   id: UUID,
-  data: Pick<Key, 'name'> & {
+  data: Pick<Key, "name"> & {
     permissions: string[];
-  }
+  },
 ): Promise<FormActionResponse<{ key: Key; apiKey: null }>> {
   try {
     const cookieStore = await cookies();
@@ -100,20 +106,20 @@ export async function updateKey(
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const { accessToken } = await getAccessToken();
     const responseKeys = await fetch(
-      `http://localhost:2313/api/v1/keys/${id}`,
+      `${process.env.KEYS_API_URI}/api/v1/keys/${id}`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           Cookie: cookieHeader,
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrf,
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrf,
         },
         body: JSON.stringify(data),
-      }
+      },
     ).then((res) => res.json());
     if (!responseKeys.success) throw new Error(responseKeys.message);
 
@@ -124,7 +130,7 @@ export async function updateKey(
 }
 
 export async function removeKey(
-  id: UUID
+  id: UUID,
 ): Promise<{ success: true; key: Key } | { success: false; error: string }> {
   try {
     const cookieStore = await cookies();
@@ -134,18 +140,18 @@ export async function removeKey(
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const { accessToken } = await getAccessToken();
     const responseKeys = await fetch(
-      `http://localhost:2313/api/v1/keys/${id}`,
+      `${process.env.KEYS_API_URI}/api/v1/keys/${id}`,
       {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           Cookie: cookieHeader,
-          'X-CSRF-Token': csrf,
+          "X-CSRF-Token": csrf,
         },
-      }
+      },
     ).then((res) => res.json());
     if (!responseKeys.success) throw new Error(responseKeys.message);
 

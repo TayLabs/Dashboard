@@ -148,6 +148,7 @@ services:
       SERVICE_NAME: dashboard
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
       AUTH_API_URI: taylab-auth:7313
+      KEYS_API_URI: taylab-auth:7212
       HOST_URI: ${FRONTEND_URL} # Public facing url for site to redirect too
       HOST_DOMAIN: ${HOST_DOMAIN}
     ports:
