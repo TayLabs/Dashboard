@@ -1,23 +1,23 @@
-'use server';
+"use server";
 
-import { getAccessToken } from '@/lib/auth';
-import { getCSRFToken } from '@/lib/auth/csrf';
-import { Profile, User } from '@/types/User';
-import { cookies } from 'next/headers';
-import { FormActionResponse } from './types/FormAction';
+import { getAccessToken } from "@/lib/auth";
+import { getCSRFToken } from "@/lib/auth/csrf";
+import { Profile, User } from "@/types/User";
+import { cookies } from "next/headers";
+import { FormActionResponse } from "./types/FormAction";
 
 export async function getProfile(): Promise<User | null> {
   try {
     const { accessToken } = await getAccessToken();
 
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/account/profile`,
+      `${process.env.AUTH_API_URI}/api/v1/account/profile`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
         } as HeadersInit,
-      }
+      },
     );
 
     const resBody = await response.json();
@@ -33,7 +33,7 @@ export async function getProfile(): Promise<User | null> {
 }
 
 export async function updateProfile(
-  data: Omit<Profile, 'id' | 'updatedAt' | 'avatarUrl'>
+  data: Omit<Profile, "id" | "updatedAt" | "avatarUrl">,
 ): Promise<FormActionResponse<{ user: User }>> {
   try {
     const { accessToken } = await getAccessToken();
@@ -44,16 +44,16 @@ export async function updateProfile(
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/account/profile`,
+      `${process.env.AUTH_API_URI}/api/v1/account/profile`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
           Authorization: accessToken ? `Bearer ${accessToken}` : undefined,
           Cookie: cookieHeader,
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrf,
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrf,
         } as HeadersInit,
         body: JSON.stringify({
           username: data.username,
@@ -62,7 +62,7 @@ export async function updateProfile(
           displayName: data.displayName,
           bio: data.bio,
         }),
-      }
+      },
     );
 
     const resBody = await response.json();

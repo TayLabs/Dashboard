@@ -25,7 +25,6 @@ export async function getAllKeys(): Promise<
 
     return { success: true, keys: responseKeys.data.keys };
   } catch (error) {
-    console.error(error);
     return { success: false, error: (error as Error).message };
   }
 }

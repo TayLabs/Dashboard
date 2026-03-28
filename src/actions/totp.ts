@@ -14,7 +14,7 @@ export async function getAllTOTP(): Promise<
   try {
     const { accessToken } = await getAccessToken();
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/account/security/totp/`,
+      `${process.env.AUTH_API_URI}/api/v1/account/security/totp/`,
       {
         method: "GET",
         headers: {
@@ -55,7 +55,7 @@ export async function validateTOTP({
 
     const { accessToken } = await getAccessToken();
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/auth/totp/validate`,
+      `${process.env.AUTH_API_URI}/api/v1/auth/totp/validate`,
       {
         method: "POST",
         headers: {
@@ -122,7 +122,7 @@ export async function createTOTP(): Promise<
       .join("; ");
     const { accessToken } = await getAccessToken();
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/account/security/totp/create`,
+      `${process.env.AUTH_API_URI}/api/v1/account/security/totp/create`,
       {
         method: "POST",
         headers: {
@@ -172,7 +172,7 @@ export async function verifyTOTP(
 
     const { accessToken } = await getAccessToken();
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/account/security/totp/verify/${totpTokenId}`,
+      `${process.env.AUTH_API_URI}/api/v1/account/security/totp/verify/${totpTokenId}`,
       {
         method: "POST",
         headers: {
@@ -216,7 +216,7 @@ export async function removeTOTP(id: UUID): Promise<FormActionResponse> {
       .join("; ");
     const { accessToken } = await getAccessToken();
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/account/security/totp/remove/${id}`,
+      `${process.env.AUTH_API_URI}/api/v1/account/security/totp/remove/${id}`,
       {
         method: "DELETE",
         headers: {

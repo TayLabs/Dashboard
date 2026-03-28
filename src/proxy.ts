@@ -16,9 +16,7 @@ export async function proxy(request: NextRequest) {
         case "NFND":
         case "UNKN":
           if (request.nextUrl.pathname !== "/auth/login") {
-            return NextResponse.redirect(
-              `http://${process.env.HOST_URI}/auth/login`,
-            );
+            return NextResponse.redirect(`${process.env.HOST_URI}/auth/login`);
           }
       }
     }

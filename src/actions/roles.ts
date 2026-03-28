@@ -1,11 +1,11 @@
-'use server';
+"use server";
 
-import { getAccessToken } from '@/lib/auth';
-import type { Role } from './types/interface/Role';
-import { UUID } from 'node:crypto';
-import { cookies } from 'next/headers';
-import { getCSRFToken } from '@/lib/auth/csrf';
-import { FormActionResponse } from './types/FormAction';
+import { getAccessToken } from "@/lib/auth";
+import type { Role } from "./types/interface/Role";
+import { UUID } from "node:crypto";
+import { cookies } from "next/headers";
+import { getCSRFToken } from "@/lib/auth/csrf";
+import { FormActionResponse } from "./types/FormAction";
 
 export async function getAllRoles(): Promise<
   { success: true; roles: Role[] } | { success: false; error: string }
@@ -13,13 +13,13 @@ export async function getAllRoles(): Promise<
   try {
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/admin/roles`,
+      `${process.env.AUTH_API_URI}/api/v1/admin/roles`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-      }
+      },
     ).then((res) => res.json());
     if (!responseAuth.success) throw new Error(responseAuth.message);
 
@@ -30,18 +30,18 @@ export async function getAllRoles(): Promise<
 }
 
 export async function getRole(
-  id: UUID
+  id: UUID,
 ): Promise<{ success: true; role: Role } | { success: false; error: string }> {
   try {
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/admin/roles/${id}`,
+      `${process.env.AUTH_API_URI}/api/v1/admin/roles/${id}`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-      }
+      },
     ).then((res) => res.json());
     if (!responseAuth.success) throw new Error(responseAuth.message);
 
@@ -52,9 +52,9 @@ export async function getRole(
 }
 
 export async function addRole(
-  data: Omit<Role, 'id' | 'permissions' | 'isExternal'> & {
+  data: Omit<Role, "id" | "permissions" | "isExternal"> & {
     permissions: string[];
-  }
+  },
 ): Promise<FormActionResponse<{ role: Role }>> {
   try {
     const cookieStore = await cookies();
@@ -64,20 +64,20 @@ export async function addRole(
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/admin/roles`,
+      `${process.env.AUTH_API_URI}/api/v1/admin/roles`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           Cookie: cookieHeader,
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrf,
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrf,
         },
         body: JSON.stringify(data),
-      }
+      },
     ).then((res) => res.json());
     if (!responseAuth.success) throw new Error(responseAuth.message);
 
@@ -89,9 +89,9 @@ export async function addRole(
 
 export async function updateRole(
   id: UUID,
-  data: Omit<Role, 'id' | 'permissions' | 'isExternal'> & {
+  data: Omit<Role, "id" | "permissions" | "isExternal"> & {
     permissions: string[];
-  }
+  },
 ): Promise<FormActionResponse<{ role: Role }>> {
   try {
     const cookieStore = await cookies();
@@ -101,20 +101,20 @@ export async function updateRole(
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/admin/roles/${id}`,
+      `${process.env.AUTH_API_URI}/api/v1/admin/roles/${id}`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           Cookie: cookieHeader,
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrf,
+          "Content-Type": "application/json",
+          "X-CSRF-Token": csrf,
         },
         body: JSON.stringify(data),
-      }
+      },
     ).then((res) => res.json());
     if (!responseAuth.success) throw new Error(responseAuth.message);
 
@@ -125,7 +125,7 @@ export async function updateRole(
 }
 
 export async function removeRole(
-  id: UUID
+  id: UUID,
 ): Promise<{ success: true; role: Role } | { success: false; error: string }> {
   try {
     const cookieStore = await cookies();
@@ -135,18 +135,18 @@ export async function removeRole(
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const { accessToken } = await getAccessToken();
     const responseAuth = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/admin/roles/${id}`,
+      `${process.env.AUTH_API_URI}/api/v1/admin/roles/${id}`,
       {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           Cookie: cookieHeader,
-          'X-CSRF-Token': csrf,
+          "X-CSRF-Token": csrf,
         },
-      }
+      },
     ).then((res) => res.json());
     if (!responseAuth.success) throw new Error(responseAuth.message);
 

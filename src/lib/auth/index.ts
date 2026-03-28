@@ -113,7 +113,7 @@ async function refreshSession(request?: NextRequest): Promise<{
       .map(({ name, value }) => `${name}=${value}`)
       .join("; ");
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/auth/refresh`,
+      `${process.env.AUTH_API_URI}/api/v1/auth/refresh`,
       {
         method: "POST",
         headers: {
@@ -242,14 +242,14 @@ export async function isAuthenticated(options?: {
     if (error instanceof AuthenticationError) {
       switch (error.code) {
         case "P2FA":
-          return redirect(`http://${process.env.HOST_URI}/auth/2fa`);
+          return redirect(`${process.env.HOST_URI}/auth/2fa`);
         case "PPRS":
-          return redirect(`http://${process.env.HOST_URI}/auth/reset-password`);
+          return redirect(`${process.env.HOST_URI}/auth/reset-password`);
         case "PEMV":
-          return redirect(`http://${process.env.HOST_URI}/auth/verify-email`);
+          return redirect(`${process.env.HOST_URI}/auth/verify-email`);
         case "NATH":
         default:
-          return redirect(`http://${process.env.HOST_URI}/auth/login`);
+          return redirect(`${process.env.HOST_URI}/auth/login`);
       }
     }
   }

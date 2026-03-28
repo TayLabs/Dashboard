@@ -1,8 +1,8 @@
-'use server';
+"use server";
 
-import { getAccessToken } from '@/lib/auth';
-import { getCSRFToken } from '@/lib/auth/csrf';
-import { cookies } from 'next/headers';
+import { getAccessToken } from "@/lib/auth";
+import { getCSRFToken } from "@/lib/auth/csrf";
+import { cookies } from "next/headers";
 
 export async function requestEmailVerification() {
   try {
@@ -13,21 +13,21 @@ export async function requestEmailVerification() {
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/auth/email/verify/request`,
+      `${process.env.AUTH_API_URI}/api/v1/auth/email/verify/request`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
           Cookie: cookieHeader,
           Authorization: `Bearer ${accessToken}`,
-          'X-CSRF-Token': csrf,
-          'Content-Type': 'application/json',
+          "X-CSRF-Token": csrf,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          linkBaseUrl: `http://${process.env.HOST_URI}/auth/verify-email/verify`,
+          linkBaseUrl: `${process.env.HOST_URI}/auth/verify-email/verify`,
         }),
-      }
+      },
     );
 
     const resBody = await response.json();
@@ -35,7 +35,7 @@ export async function requestEmailVerification() {
     if (!resBody.success) {
       return {
         success: false,
-        error: resBody.message || 'An unknown error occurred, please try again',
+        error: resBody.message || "An unknown error occurred, please try again",
       };
     } else {
       return {
@@ -51,7 +51,7 @@ export async function requestEmailVerification() {
     } else {
       return {
         success: false,
-        error: 'An unknown error occured, please try again',
+        error: "An unknown error occured, please try again",
       };
     }
   }
@@ -67,16 +67,16 @@ export async function verifyEmail(token: string) {
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/auth/email/verify?${queryString}`,
+      `${process.env.AUTH_API_URI}/api/v1/auth/email/verify?${queryString}`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
           Cookie: cookieHeader,
-          'X-CSRF-Token': csrf,
+          "X-CSRF-Token": csrf,
         },
-      }
+      },
     );
 
     const resBody = await response.json();
@@ -84,10 +84,10 @@ export async function verifyEmail(token: string) {
     if (!resBody.success) {
       return {
         success: false,
-        error: resBody.message || 'An unknown error occurred, please try again',
+        error: resBody.message || "An unknown error occurred, please try again",
       };
     } else {
-      cookieStore.delete('_access_t'); // Delete access token so it refreshes without pending: emailVerification
+      cookieStore.delete("_access_t"); // Delete access token so it refreshes without pending: emailVerification
 
       return {
         success: true,
@@ -102,7 +102,7 @@ export async function verifyEmail(token: string) {
     } else {
       return {
         success: false,
-        error: 'An unknown error occured, please try again',
+        error: "An unknown error occured, please try again",
       };
     }
   }

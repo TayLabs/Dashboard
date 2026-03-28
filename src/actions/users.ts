@@ -14,7 +14,7 @@ export async function getAllUsers(): Promise<
   try {
     const { accessToken } = await getAccessToken();
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/admin/users`,
+      `${process.env.AUTH_API_URI}/api/v1/admin/users`,
       {
         method: "GET",
         headers: {
@@ -52,7 +52,7 @@ export async function getUserWithRoles(
   try {
     const { accessToken } = await getAccessToken();
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/admin/users/${userId}/roles`,
+      `${process.env.AUTH_API_URI}/api/v1/admin/users/${userId}/roles`,
       {
         method: "GET",
         headers: {
@@ -95,7 +95,7 @@ export async function forcePasswordReset(
       .join("; ");
     const { accessToken } = await getAccessToken();
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/admin/users/${userId}/force-password-reset`,
+      `${process.env.AUTH_API_URI}/api/v1/admin/users/${userId}/force-password-reset`,
       {
         method: "PATCH",
         headers: {
@@ -140,7 +140,7 @@ export async function updateRoles(
       .join("; ");
     const { accessToken } = await getAccessToken();
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/admin/users/${userId}/roles`,
+      `${process.env.AUTH_API_URI}/api/v1/admin/users/${userId}/roles`,
       {
         method: "PATCH",
         headers: {

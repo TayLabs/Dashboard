@@ -1,6 +1,6 @@
-import Heading from './components/Heading';
-import { Button } from '@/components/ui/button';
-import { isAuthenticated } from '@/lib/auth';
+import Heading from "./components/Heading";
+import { Button } from "@/components/ui/button";
+import { isAuthenticated } from "@/lib/auth";
 import {
   Empty,
   EmptyContent,
@@ -8,11 +8,11 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from '@/components/ui/empty';
-import { FolderCodeIcon } from 'lucide-react';
-import Link from 'next/link';
-import { getAllServices } from '@/actions/services';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+} from "@/components/ui/empty";
+import { FolderCodeIcon } from "lucide-react";
+import Link from "next/link";
+import { getAllServices } from "@/actions/services";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Item,
   ItemActions,
@@ -20,8 +20,8 @@ import {
   ItemDescription,
   ItemGroup,
   ItemTitle,
-} from '@/components/ui/item';
-import { getAllUsers } from '@/actions/users';
+} from "@/components/ui/item";
+import { getAllUsers } from "@/actions/users";
 
 export default async function HomePage() {
   await isAuthenticated();
@@ -65,7 +65,8 @@ export default async function HomePage() {
             <EmptyHeader>
               <EmptyMedia
                 variant="icon"
-                className="p-8 bg-background shadow-sm">
+                className="p-8 bg-background shadow-sm"
+              >
                 <FolderCodeIcon className="size-8" />
               </EmptyMedia>
               <EmptyTitle>No Projects Yet</EmptyTitle>
@@ -97,7 +98,7 @@ export default async function HomePage() {
                   You have&nbsp;
                   {
                     responseUsers.users.filter((user) =>
-                      user.email.includes('@')
+                      user.email.includes("@"),
                     ).length
                   }
                   &nbsp;users in your environment

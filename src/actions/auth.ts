@@ -23,7 +23,7 @@ export async function login({
       .map(({ name, value }) => `${name}=${value}`)
       .join("; ");
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/auth/login`,
+      `${process.env.AUTH_API_URI}/api/v1/auth/login`,
       {
         method: "POST",
         headers: {
@@ -107,7 +107,7 @@ export async function signup({
       .map(({ name, value }) => `${name}=${value}`)
       .join("; ");
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/auth/signup`,
+      `${process.env.AUTH_API_URI}/api/v1/auth/signup`,
       {
         method: "POST",
         headers: {
@@ -121,7 +121,7 @@ export async function signup({
           email,
           password,
           passwordConfirm,
-          linkBaseUrl: `http://${process.env.HOST_URI}/auth/verify-email/verify`,
+          linkBaseUrl: `${process.env.HOST_URI}/auth/verify-email/verify`,
         }),
       },
     );
@@ -192,7 +192,7 @@ export async function resetPassword({
       .map(({ name, value }) => `${name}=${value}`)
       .join("; ");
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/auth/password/change`,
+      `${process.env.AUTH_API_URI}/api/v1/auth/password/change`,
       {
         method: "PATCH",
         headers: {
@@ -257,7 +257,7 @@ export async function logout(): Promise<FormActionResponse> {
       .map(({ name, value }) => `${name}=${value}`)
       .join("; ");
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/auth/logout`,
+      `${process.env.AUTH_API_URI}/api/v1/auth/logout`,
       {
         method: "DELETE",
         headers: {

@@ -1,9 +1,9 @@
-'use server';
+"use server";
 
-import { cookies } from 'next/headers';
-import { FormActionResponse } from './types/FormAction';
-import { getAccessToken } from '@/lib/auth';
-import { getCSRFToken } from '@/lib/auth/csrf';
+import { cookies } from "next/headers";
+import { FormActionResponse } from "./types/FormAction";
+import { getAccessToken } from "@/lib/auth";
+import { getCSRFToken } from "@/lib/auth/csrf";
 
 export async function requestReset({
   email,
@@ -19,21 +19,21 @@ export async function requestReset({
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/auth/password/reset/request`,
+      `${process.env.AUTH_API_URI}/api/v1/auth/password/reset/request`,
       {
-        method: 'POST',
+        method: "POST",
         headers: {
           Cookie: cookieHeader,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
-          'X-CSRF-Token': csrf,
+          "X-CSRF-Token": csrf,
         },
         body: JSON.stringify({
           email,
         }),
-      }
+      },
     );
 
     const resBody = await response.json();
@@ -54,7 +54,7 @@ export async function requestReset({
     } else {
       return {
         success: false,
-        error: 'An unknown error occured, please try again',
+        error: "An unknown error occured, please try again",
       };
     }
   }
@@ -78,22 +78,22 @@ export async function resetPassword({
     const cookieHeader = cookieStore
       .getAll()
       .map(({ name, value }) => `${name}=${value}`)
-      .join('; ');
+      .join("; ");
     const response = await fetch(
-      `http://${process.env.AUTH_API_URI}/api/v1/auth/password/reset?t=${token}`,
+      `${process.env.AUTH_API_URI}/api/v1/auth/password/reset?t=${token}`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
           Cookie: cookieHeader,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
-          'X-CSRF-Token': csrf,
+          "X-CSRF-Token": csrf,
         },
         body: JSON.stringify({
           password,
           passwordConfirm,
         }),
-      }
+      },
     );
 
     const resBody = await response.json();
@@ -114,7 +114,7 @@ export async function resetPassword({
     } else {
       return {
         success: false,
-        error: 'An unknown error occured, please try again',
+        error: "An unknown error occured, please try again",
       };
     }
   }
