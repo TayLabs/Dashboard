@@ -116,8 +116,8 @@ services:
       TOTP_ENCRYPT_KEY: ${TOTP_ENCRYPT_KEY}
       RESET_TOKEN_HASH_KEY: ${RESET_TOKEN_HASH_KEY}
       EMAIL_VERIFICATION_SECRET: ${EMAIL_VERIFICATION_SECRET}
-      FRONTEND_URL: http://taylabs.taylorkelley.dev # Publicly viewable url for use in email links
-      HOST_DOMAIN: localhost # root public url used for setting cookie's domain attribute (i.e. *.domain.com)
+      FRONTEND_URL: ${FRONTEND_URL} # Publicly viewable url for use in email links
+      HOST_DOMAIN: ${HOST_DOMAIN} # root public url used for setting cookie's domain attribute (i.e. *.domain.com)
     # ports:
     #   - "7313:7313"
     depends_on:
@@ -148,7 +148,8 @@ services:
       SERVICE_NAME: dashboard
       ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
       AUTH_API_URI: taylab-auth:7313
-      HOST_URI: taylabs.taylorkelley.dev # Public facing url for site to redirect too
+      HOST_URI: ${FRONTEND_URL} # Public facing url for site to redirect too
+      HOST_DOMAIN: ${HOST_DOMAIN}
     ports:
       - "8919:7919"
     depends_on:
