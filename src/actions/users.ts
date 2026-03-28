@@ -187,7 +187,7 @@ export async function toggleTwoFactor(
       .join("; ");
     const { accessToken } = await getAccessToken();
     const response = await fetch(
-      `${process.env.AUTH_API_URL}/api/v1/account/security/two-factor/${
+      `${process.env.AUTH_API_URI}/api/v1/account/security/two-factor/${
         toggle ? "on" : "off"
       }`,
       {
