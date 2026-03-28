@@ -1,30 +1,30 @@
-'use client';
-import { Role } from '@/actions/types/interface/Role';
-import { Button } from '@/components/ui/button';
+"use client";
+import { Role } from "@/actions/types/interface/Role";
+import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-} from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { useForm } from '@tanstack/react-form';
-import React, { useState } from 'react';
-import { toast } from 'sonner';
-import z from 'zod';
-import { useRouter } from 'next/navigation';
-import { addRole, removeRole, updateRole } from '@/actions/roles';
-import type { UUID } from 'node:crypto';
-import { Switch } from '@/components/ui/switch';
-import PermissionsInput from '@/components/PermissionsInput';
-import { Service } from '@/actions/types/interface/Service.interface';
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useForm } from "@tanstack/react-form";
+import React, { useState } from "react";
+import { toast } from "sonner";
+import z from "zod";
+import { useRouter } from "next/navigation";
+import { addRole, removeRole, updateRole } from "@/actions/roles";
+import type { UUID } from "node:crypto";
+import { Switch } from "@/components/ui/switch";
+import PermissionsInput from "@/components/PermissionsInput";
+import { Service } from "@/actions/types/interface/Service.interface";
 
 const editRoleFormSchema = z.object({
-  name: z.string().min(1, 'Role name is required'),
+  name: z.string().min(1, "Role name is required"),
   assignToNewUser: z.boolean().transform(Boolean),
   permissions: z.array(
-    z.uuid('Must be a valid UUID').transform((str) => str as UUID)
+    z.uuid("Must be a valid UUID").transform((str) => str as UUID),
   ),
 });
 
@@ -41,7 +41,7 @@ export default function EditRoleForm({
   const router = useRouter();
   const form = useForm({
     defaultValues: {
-      name: role?.name || '',
+      name: role?.name || "",
       assignToNewUser: role?.assignToNewUser || false,
       permissions:
         role?.permissions.map((permission) => permission.id as string) ||
@@ -72,7 +72,7 @@ export default function EditRoleForm({
         router.push(`/roles/${id}`);
       }
 
-      toast.success('Changes have been saved');
+      toast.success("Changes have been saved");
     },
   });
 
@@ -84,7 +84,7 @@ export default function EditRoleForm({
     if (!response.success) {
       toast.error(response.error);
     } else {
-      router.push('/roles');
+      router.push("/roles");
     }
   };
 
@@ -95,7 +95,8 @@ export default function EditRoleForm({
         e.preventDefault();
         form.handleSubmit();
       }}
-      className="flex flex-col gap-4 mt-8">
+      className="flex flex-col gap-4 mt-8"
+    >
       <FieldGroup className="gap-4">
         <form.Field
           name="name"
@@ -115,7 +116,7 @@ export default function EditRoleForm({
                   required
                   aria-invalid={isInvalid}
                   autoComplete="role-name"
-                  disabled={!role?.isExternal}
+                  disabled={role?.isExternal == false}
                 />
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
@@ -132,7 +133,8 @@ export default function EditRoleForm({
               <Field
                 data-invalid={isInvalid}
                 orientation="horizontal"
-                className="w-fit">
+                className="w-fit"
+              >
                 <FieldLabel>Assign to new users</FieldLabel>
                 <Switch
                   id={field.name}
@@ -143,7 +145,7 @@ export default function EditRoleForm({
                     field.handleChange(e.valueOf() as boolean)
                   }
                   aria-invalid={isInvalid}
-                  disabled={!role?.isExternal}
+                  disabled={role?.isExternal == false}
                 />
                 {isInvalid && <FieldError errors={field.state.meta.errors} />}
               </Field>
@@ -166,7 +168,7 @@ export default function EditRoleForm({
                 value={field.state.value as UUID[]}
                 onChange={(id, action) =>
                   field.setValue((values) => {
-                    if (action === 'delete') {
+                    if (action === "delete") {
                       const i = values.indexOf(id);
                       if (i > -1) values.splice(i, 1);
                       return values;
@@ -177,7 +179,7 @@ export default function EditRoleForm({
                   })
                 }
                 onBlur={field.handleBlur}
-                disabled={!role?.isExternal}
+                disabled={role?.isExternal == false}
               />
             </Field>
           )}
@@ -189,14 +191,16 @@ export default function EditRoleForm({
             selector={(formState) => [
               formState.canSubmit,
               formState.isSubmitting,
-            ]}>
+            ]}
+          >
             {([canSubmit, isSubmitting]) => (
               <Button
                 type="submit"
                 form="edit-role-form"
                 className="mt-4 w-full"
-                disabled={!canSubmit}>
-                {isSubmitting ? 'Saving...' : 'Save'}
+                disabled={!canSubmit}
+              >
+                {isSubmitting ? "Saving..." : "Save"}
               </Button>
             )}
           </form.Subscribe>
@@ -204,7 +208,8 @@ export default function EditRoleForm({
             <Button
               variant="destructive"
               className="mt-4 w-full"
-              onClick={handleDelete}>
+              onClick={handleDelete}
+            >
               Delete
             </Button>
           )}
