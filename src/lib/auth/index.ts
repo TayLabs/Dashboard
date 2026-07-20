@@ -137,7 +137,7 @@ async function refreshSession(request?: NextRequest): Promise<{
       // expires: ... // Session cookie, refreshes on each new visit/session
       httpOnly: true,
       path: "/",
-      domain: `.${process.env.HOST_DOMAIN}`,
+      domain: `${process.env.HOST_DOMAIN}`,
       sameSite: "lax",
     });
     request?.cookies.set("_access_t", token);
@@ -159,7 +159,7 @@ async function refreshSession(request?: NextRequest): Promise<{
     cookieStore.set("_access_t", result.accessToken, {
       httpOnly: true,
       path: "/",
-      domain: `.${process.env.HOST_DOMAIN}`,
+      domain: `${process.env.HOST_DOMAIN}`,
       sameSite: "lax",
     });
     return result;

@@ -27,7 +27,7 @@ export async function proxy(request: NextRequest) {
   if (accessToken) {
     response.cookies.set("_access_t", accessToken, {
       httpOnly: true,
-      domain: `.${process.env.HOST_DOMAIN}`,
+      domain: `${process.env.HOST_DOMAIN}`,
       path: "/",
     });
   }

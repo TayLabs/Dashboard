@@ -51,7 +51,7 @@ export async function login({
         // expires: ... // Session cookie, refreshes on each new visit/session
         httpOnly: true,
         path: "/",
-        domain: `.${process.env.HOST_DOMAIN}`,
+        domain: `${process.env.HOST_DOMAIN}`,
         sameSite: "lax",
       });
 
@@ -139,7 +139,7 @@ export async function signup({
         // expires: ... // Session cookie, refreshes on each new visit/session
         httpOnly: true,
         path: "/",
-        domain: `.${process.env.HOST_DOMAIN}`,
+        domain: `${process.env.HOST_DOMAIN}`,
         sameSite: "lax",
       });
 

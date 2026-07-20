@@ -36,6 +36,8 @@ export default function LoginForm() {
       onSubmitAsync: async ({ value: data }) => {
         const response = await login(data);
 
+        console.log(response)
+
         if (!response.success) {
           if (response.error) toast.error(response.error);
 
