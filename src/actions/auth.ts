@@ -38,6 +38,8 @@ export async function login({
       },
     );
 
+    console.log(response);
+
     const resBody = await response.json();
 
     if (!resBody.success) {
@@ -125,6 +127,8 @@ export async function signup({
         }),
       },
     );
+
+    console.log(response);
 
     const resBody = await response.json();
 
