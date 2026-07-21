@@ -1,10 +1,12 @@
-FROM node:20-alpine AS base
+FROM node:24-alpine AS base
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 FROM base AS deps
 COPY package.json pnpm-lock.yaml* ./
-RUN corepack enable pnpm && pnpm i --frozen-lockfile
+RUN corepack enable pnpm && \
+    pnpm config set build-dependencies sharp unrs-resolver && \
+    pnpm i --frozen-lockfile
 
 FROM base AS builder
 WORKDIR /app
