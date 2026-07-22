@@ -69,11 +69,32 @@ export async function login({
     if (!resBody.success) {
       return {
         success: false,
-        error: resBody.message || "An unknown error occurred",
+        error: resBody.message || "An unknown error occurred, please try again",
+      };
+    } else {
+      const token = resBody.data.accessToken;
+      cookieStore.set("_access_t", token, {
+        // expires: ... // Session cookie, refreshes on each new visit/session
+        httpOnly: true,
+        path: "/",
+        domain: `${process.env.HOST_DOMAIN}`,
+        sameSite: "lax",
+      });
+
+      // Set cookies for login action
+      const cookieHeaders = response.headers.getSetCookie();
+
+      for (const cookieHeader of cookieHeaders) {
+        const cookie = parseCookie(cookieHeader);
+
+        cookieStore.set(cookie);
+      }
+
+      return {
+        success: true,
+        pending: resBody.data.pending as PendingActionType,
       };
     }
-
-    // ... rest of your logic
   } catch (error) {
     console.error('❌ Login error:', error);
     if (error instanceof Error) {
