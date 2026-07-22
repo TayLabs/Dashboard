@@ -5,7 +5,6 @@ WORKDIR /app
 FROM base AS deps
 COPY package.json pnpm-lock.yaml* ./
 RUN corepack enable pnpm && \
-    pnpm config set build-dependencies sharp unrs-resolver && \
     pnpm i --frozen-lockfile
 
 FROM base AS builder
