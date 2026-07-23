@@ -50,19 +50,8 @@ export async function login({
       }),
     });
 
-    console.log('Response Status:', response.status);
-    console.log('Content-Type:', response.headers.get('content-type'));
-
-    // Check if response is actually JSON before parsing
-    const contentType = response.headers.get('content-type');
-    if (!contentType?.includes('application/json')) {
-      const text = await response.text();
-      console.error('❌ Non-JSON response received');
-      console.error('Response:', text.substring(0, 300));
-      throw new Error(
-        `Expected JSON response, got ${contentType}. Status: ${response.status}`
-      );
-    }
+    const text = await response.text();
+    throw new Error(`Response: ${text.substring(0, 300)}`)
 
     const resBody = await response.json();
 
