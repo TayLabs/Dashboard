@@ -46,12 +46,9 @@ export async function login({
       }),
     });
 
-    // const resBody = await response.json();
+    console.error(await response.text());
 
-      return {
-        success: false,
-        error: `Failed to parse response: ${await response.text()}`,
-      };
+    const resBody = await response.json();
 
     if (!resBody.success) {
       return {
