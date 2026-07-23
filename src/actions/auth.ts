@@ -48,15 +48,10 @@ export async function login({
 
     // const resBody = await response.json();
 
-    let resBody;
-    try {
-      resBody = await response.json();
-    } catch {
       return {
         success: false,
         error: `Failed to parse response: ${await response.text()}`,
       };
-    }
 
     if (!resBody.success) {
       return {
