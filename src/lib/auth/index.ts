@@ -183,14 +183,14 @@ async function refreshSession(request?: NextRequest): Promise<{
 /**
  * To be used in server actions when fetching or posting data. Will auto refresh if token is about to expire
  */
-export async function getAccessToken() {
+export async function getAccessToken(request?: NextRequest) {
   const cookieStore = await cookies();
 
   let token = cookieStore.get("_access_t")?.value as string | undefined;
 
   const isServerComponent = await isExecutedFromServerComponent();
   if (!isServerComponent) {
-    const response = await refreshSession();
+    const response = !request ? await refreshSession() : await refreshSession(request);
     token = response?.accessToken;
   }
 
