@@ -32,10 +32,6 @@ export async function login({
 
     const url = `${authApiUri}/api/v1/auth/login`;
 
-    console.log('=== LOGIN SERVER ACTION ===');
-    console.log('URL:', url);
-    console.log('Cookies:', cookieHeader.substring(0, 50) + '...');
-
     const response = await fetch(url, {
       method: "POST",
       credentials: 'include',
@@ -50,10 +46,17 @@ export async function login({
       }),
     });
 
-    const text = await response.text();
-    throw new Error(`Response: ${text.substring(0, 300)}`)
+    // const resBody = await response.json();
 
-    const resBody = await response.json();
+    let resBody;
+    try {
+      resBody = await response.json();
+    } catch {
+      return {
+        success: false,
+        error: `Failed to parse response: ${await response.text()}`,
+      };
+    }
 
     if (!resBody.success) {
       return {
