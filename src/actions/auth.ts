@@ -46,8 +46,6 @@ export async function login({
       }),
     });
 
-    console.error(await response.text());
-
     const resBody = await response.json();
 
     if (!resBody.success) {
