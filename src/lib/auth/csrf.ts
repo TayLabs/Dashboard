@@ -16,8 +16,6 @@ export async function initializeCSRFToken(): Promise<string> {
       },
     );
 
-    throw new Error(await response.text())
-
     const resBody = await response.json();
 
     if (response.ok && resBody.success) {
